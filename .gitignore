@@ -1,0 +1,63 @@
+## Build results
+/bin/
+/obj/
+/out/
+/publish/
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Visual Studio files
+.vs/
+*.dbmdl
+*.VC.db
+*.VC.VC.opendb
+
+## Rider / JetBrains
+.idea/
+
+## Logs
+*.log
+logs/
+
+## Configuration
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+
+## Secrets
+secrets.json
+*.pfx
+
+## Environment files
+.env
+.env.*
+
+## Node (if you have frontend)
+node_modules/
+dist/
+build/
+
+## OS-generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Publish folder
+/wwwroot/lib/
+/wwwroot/node_modules/
+/wwwroot/dist/
+
+## Packages
+*.nupkg
+*.snupkg
+packages/
+
+## Backup and temp files
+*.bak
+*.tmp
+*.temp
