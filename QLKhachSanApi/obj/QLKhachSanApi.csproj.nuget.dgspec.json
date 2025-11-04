@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\BaiTapLon\\QLKhachSan\\QLKhachSanApi\\QLKhachSanApi.csproj": {}
+    "D:\\QLKhachSSan\\QLKhachSSan\\QLKhachSanApi\\QLKhachSanApi.csproj": {}
   },
   "projects": {
-    "D:\\BaiTapLon\\QLKhachSan\\QLKhachSanApi\\QLKhachSanApi.csproj": {
+    "D:\\QLKhachSSan\\QLKhachSSan\\QLKhachSanApi\\QLKhachSanApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\BaiTapLon\\QLKhachSan\\QLKhachSanApi\\QLKhachSanApi.csproj",
+        "projectUniqueName": "D:\\QLKhachSSan\\QLKhachSSan\\QLKhachSanApi\\QLKhachSanApi.csproj",
         "projectName": "QLKhachSanApi",
-        "projectPath": "D:\\BaiTapLon\\QLKhachSan\\QLKhachSanApi\\QLKhachSanApi.csproj",
+        "projectPath": "D:\\QLKhachSSan\\QLKhachSSan\\QLKhachSanApi\\QLKhachSanApi.csproj",
         "packagesPath": "C:\\Users\\DUY SON\\.nuget\\packages\\",
-        "outputPath": "D:\\BaiTapLon\\QLKhachSan\\QLKhachSanApi\\obj\\",
+        "outputPath": "D:\\QLKhachSSan\\QLKhachSSan\\QLKhachSanApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -54,6 +54,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.6.2, )"
+            },
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.8.6, )"
             }
           },
           "imports": [
