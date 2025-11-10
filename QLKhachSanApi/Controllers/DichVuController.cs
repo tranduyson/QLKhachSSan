@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using QLKhachSanApi.Models;
-using QLKhachSanApi.Services;
+using QLKhachSanApi.Repositories;
 
 namespace QLKhachSanApi.Controllers
 {
@@ -8,24 +8,24 @@ namespace QLKhachSanApi.Controllers
     [ApiController]
     public class DichVuController : ControllerBase
     {
-        private readonly IDichVuService _service;
+        private readonly IRepository<DichVu> _repository;
 
-        public DichVuController(IDichVuService service)
+        public DichVuController(IRepository<DichVu> repository)
         {
-            _service = service;
+            _repository = repository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var dichVus = await _service.GetAllAsync();
+            var dichVus = await _repository.GetAllAsync();
             return Ok(dichVus);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var dichVu = await _service.GetByIdAsync(id);
+            var dichVu = await _repository.GetByIdAsync(id);
             if (dichVu == null)
                 return NotFound();
             return Ok(dichVu);
@@ -37,7 +37,7 @@ namespace QLKhachSanApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _service.AddAsync(dichVu);
+            var created = await _repository.AddAsync(dichVu);
             return CreatedAtAction(nameof(GetById), new { id = created.MaDichVu }, created);
         }
 
@@ -50,18 +50,18 @@ namespace QLKhachSanApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _service.UpdateAsync(dichVu);
+            await _repository.UpdateAsync(dichVu);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _service.ExistsAsync(id);
+            var exists = await _repository.ExistsAsync(id);
             if (!exists)
                 return NotFound();
 
-            await _service.DeleteAsync(id);
+            await _repository.DeleteAsync(id);
             return NoContent();
         }
     }

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using QLKhachSanApi.DAL;
 using QLKhachSanApi.Models;
-using QLKhachSanApi.Services;
+using QLKhachSanApi.Repositories;
 
 namespace QLKhachSanApi.Controllers
 {
@@ -8,24 +10,30 @@ namespace QLKhachSanApi.Controllers
     [ApiController]
     public class ThanhToanController : ControllerBase
     {
-        private readonly IThanhToanService _service;
+        private readonly IRepository<ThanhToan> _repository;
+        private readonly HotelDbContext _context;
 
-        public ThanhToanController(IThanhToanService service)
+        public ThanhToanController(IRepository<ThanhToan> repository, HotelDbContext context)
         {
-            _service = service;
+            _repository = repository;
+            _context = context;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var thanhToans = await _service.GetAllWithDatPhongAsync();
+            var thanhToans = await _context.ThanhToans
+                .Include(tt => tt.DatPhong)
+                .ToListAsync();
             return Ok(thanhToans);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var thanhToan = await _service.GetByIdWithDatPhongAsync(id);
+            var thanhToan = await _context.ThanhToans
+                .Include(tt => tt.DatPhong)
+                .FirstOrDefaultAsync(tt => tt.MaThanhToan == id);
 
             if (thanhToan == null)
                 return NotFound();
@@ -35,7 +43,10 @@ namespace QLKhachSanApi.Controllers
         [HttpGet("datphong/{maDatPhong}")]
         public async Task<IActionResult> GetByDatPhong(int maDatPhong)
         {
-            var thanhToans = await _service.GetByDatPhongAsync(maDatPhong);
+            var thanhToans = await _context.ThanhToans
+                .Include(tt => tt.DatPhong)
+                .Where(tt => tt.MaDatPhong == maDatPhong)
+                .ToListAsync();
             return Ok(thanhToans);
         }
 
@@ -45,7 +56,7 @@ namespace QLKhachSanApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _service.AddAsync(thanhToan);
+            var created = await _repository.AddAsync(thanhToan);
             return CreatedAtAction(nameof(GetById), new { id = created.MaThanhToan }, created);
         }
 
@@ -58,18 +69,18 @@ namespace QLKhachSanApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _service.UpdateAsync(thanhToan);
+            await _repository.UpdateAsync(thanhToan);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _service.ExistsAsync(id);
+            var exists = await _repository.ExistsAsync(id);
             if (!exists)
                 return NotFound();
 
-            await _service.DeleteAsync(id);
+            await _repository.DeleteAsync(id);
             return NoContent();
         }
     }

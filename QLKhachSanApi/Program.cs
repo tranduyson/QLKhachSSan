@@ -1,18 +1,16 @@
-﻿using QLKhachSanApi.DAL;
-using QLKhachSanApi.Services;
+﻿using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddSingleton<DatabaseHelper>();
-builder.Services.AddScoped<ILoaiPhongService, LoaiPhongService>();
-builder.Services.AddScoped<IKhachHangService, KhachHangService>();
-builder.Services.AddScoped<IDichVuService, DichVuService>();
-builder.Services.AddScoped<IPhongService, PhongService>();
-builder.Services.AddScoped<IThanhToanService, ThanhToanService>();
-builder.Services.AddScoped<IDatPhongService, DatPhongService>();
+builder.Services.AddDbContext<QLKhachSanApi.DAL.HotelDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("HotelDb")));
 
-// Remove EF generic repository registration; now using ADO services
+// Register repositories
+builder.Services.AddScoped(typeof(QLKhachSanApi.Repositories.IRepository<>), typeof(QLKhachSanApi.Repositories.Repository<>));
+// ADO.NET helpers and overrides
+builder.Services.AddSingleton<QLKhachSanApi.DAL.DatabaseHelper>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.DichVu>, QLKhachSanApi.Repositories.DichVuAdoRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

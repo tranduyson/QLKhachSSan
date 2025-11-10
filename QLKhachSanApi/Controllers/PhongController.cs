@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using QLKhachSanApi.DAL;
 using QLKhachSanApi.Models;
-using QLKhachSanApi.Services;
+using QLKhachSanApi.Repositories;
 
 namespace QLKhachSanApi.Controllers
 {
@@ -8,24 +10,26 @@ namespace QLKhachSanApi.Controllers
     [ApiController]
     public class PhongController : ControllerBase
     {
-        private readonly IPhongService _service;
+        private readonly IRepository<Phong> _repository;
+        private readonly HotelDbContext _context;
 
-        public PhongController(IPhongService service)
+        public PhongController(IRepository<Phong> repository, HotelDbContext context)
         {
-            _service = service;
+            _repository = repository;
+            _context = context;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var phongs = await _service.GetAllWithLoaiPhongAsync();
+            var phongs = await _context.Phongs.Include(p => p.LoaiPhong).ToListAsync();
             return Ok(phongs);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var phong = await _service.GetByIdWithLoaiPhongAsync(id);
+            var phong = await _context.Phongs.Include(p => p.LoaiPhong).FirstOrDefaultAsync(p => p.MaPhong == id);
             if (phong == null)
                 return NotFound();
             return Ok(phong);
@@ -34,7 +38,19 @@ namespace QLKhachSanApi.Controllers
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableRooms([FromQuery] DateTime checkIn, [FromQuery] DateTime checkOut)
         {
-            var availableRooms = await _service.GetAvailableRoomsAsync(checkIn, checkOut);
+            var bookedRooms = await _context.ChiTietDatPhongs
+                .Include(ct => ct.DatPhong)
+                .Where(ct => ct.DatPhong.TrangThai != "Hủy" &&
+                           ((ct.DatPhong.NgayNhan <= checkOut && ct.DatPhong.NgayTra >= checkIn)))
+                .Select(ct => ct.MaPhong)
+                .Distinct()
+                .ToListAsync();
+
+            var availableRooms = await _context.Phongs
+                .Include(p => p.LoaiPhong)
+                .Where(p => !bookedRooms.Contains(p.MaPhong) && p.TinhTrang == "Trống")
+                .ToListAsync();
+
             return Ok(availableRooms);
         }
 
@@ -44,7 +60,7 @@ namespace QLKhachSanApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _service.AddAsync(phong);
+            var created = await _repository.AddAsync(phong);
             return CreatedAtAction(nameof(GetById), new { id = created.MaPhong }, created);
         }
 
@@ -57,18 +73,18 @@ namespace QLKhachSanApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _service.UpdateAsync(phong);
+            await _repository.UpdateAsync(phong);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _service.ExistsAsync(id);
+            var exists = await _repository.ExistsAsync(id);
             if (!exists)
                 return NotFound();
 
-            await _service.DeleteAsync(id);
+            await _repository.DeleteAsync(id);
             return NoContent();
         }
     }
