@@ -12,7 +12,7 @@ builder.Services.AddScoped(typeof(QLKhachSanApi.Repositories.IRepository<>), typ
 builder.Services.AddSingleton<QLKhachSanApi.DAL.DatabaseHelper>();
 builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.DichVu>, QLKhachSanApi.Repositories.DichVuAdoRepository>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -44,5 +44,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

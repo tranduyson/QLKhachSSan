@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QLKhachSanApi.Models
 {
+
     [Table("ThanhToan")]
     public class ThanhToan
     {
@@ -30,4 +31,5 @@ namespace QLKhachSanApi.Models
         [ForeignKey("MaDatPhong")]
         public DatPhong DatPhong { get; set; }
     }
+
 }
