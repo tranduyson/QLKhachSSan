@@ -1161,6 +1161,27 @@
           },
           "nhanVien": {
             "$ref": "#/components/schemas/NhanVien"
+          },
+          "chiTietDatPhongs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChiTietDatPhong"
+            },
+            "nullable": true
+          },
+          "suDungDichVus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SuDungDichVu"
+            },
+            "nullable": true
+          },
+          "thanhToans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ThanhToan"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false

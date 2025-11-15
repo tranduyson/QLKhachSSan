@@ -37,11 +37,11 @@ namespace QLKhachSanApi.Models
         [ForeignKey("MaNhanVien")]
         public NhanVien? NhanVien { get; set; }
 
-        [JsonIgnore]
+        //[JsonIgnore]
         public ICollection<ChiTietDatPhong> ChiTietDatPhongs { get; set; } = new List<ChiTietDatPhong>();
-        [JsonIgnore]
+        //[JsonIgnore]
         public ICollection<SuDungDichVu> SuDungDichVus { get; set; } = new List<SuDungDichVu>();
-        [JsonIgnore]
+        //[JsonIgnore]
         public ICollection<ThanhToan> ThanhToans { get; set; } = new List<ThanhToan>();
     }
 }

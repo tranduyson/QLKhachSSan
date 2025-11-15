@@ -47,6 +47,7 @@ namespace QLKhachSanApi.Controllers
                 .Include(dp => dp.NhanVien)
                 .Include(dp => dp.ChiTietDatPhongs).ThenInclude(ct => ct.Phong).ThenInclude(p => p.LoaiPhong)
                 .Include(dp => dp.SuDungDichVus).ThenInclude(sd => sd.DichVu)
+                .Include(dp => dp.ThanhToans)
                 .FirstOrDefaultAsync(dp => dp.MaDatPhong == id);
 
             if (datPhong == null)
