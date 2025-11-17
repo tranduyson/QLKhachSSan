@@ -31,7 +31,7 @@ namespace QLKhachSanApi.Models
         public int TrangThai { get; set; }
 
         // Navigation property
-        [JsonIgnore]
+        //[JsonIgnore]
         public ICollection<DatPhong> DatPhongs { get; set; } = new List<DatPhong>();
     }
 }
