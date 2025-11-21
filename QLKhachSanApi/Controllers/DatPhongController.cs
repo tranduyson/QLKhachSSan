@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using QLKhachSanApi.DAL;
 using QLKhachSanApi.Models;
 using QLKhachSanApi.Repositories;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace QLKhachSanApi.Controllers
 {
@@ -10,59 +12,102 @@ namespace QLKhachSanApi.Controllers
     [ApiController]
     public class DatPhongController : ControllerBase
     {
-        private readonly IRepository<DatPhong> _repository;
-        private readonly IRepository<ChiTietDatPhong> _chiTietRepository;
-        private readonly IRepository<SuDungDichVu> _dichVuRepository;
-        private readonly HotelDbContext _context;
+        private readonly DatPhongAdoRepository _repository;
+        private readonly ChiTietDatPhongAdoRepository _chiTietRepository;
+        private readonly SuDungDichVuAdoRepository _suDungDichVuRepository;
+        private readonly DichVuAdoRepository _dichVuRepository;
+        private readonly PhongAdoRepository _phongRepository;
+        private readonly ThanhToanAdoRepository _thanhToanRepository;
+        private readonly KhachHangAdoRepository _khachHangRepository;
+        private readonly NhanVienAdoRepository _nhanVienRepository;
+        private readonly DatabaseHelper _dbHelper;
 
         public DatPhongController(
-            IRepository<DatPhong> repository,
-            IRepository<ChiTietDatPhong> chiTietRepository,
-            IRepository<SuDungDichVu> dichVuRepository,
-            HotelDbContext context)
+            DatPhongAdoRepository repository,
+            ChiTietDatPhongAdoRepository chiTietRepository,
+            SuDungDichVuAdoRepository suDungDichVuRepository,
+            DichVuAdoRepository dichVuRepository,
+            PhongAdoRepository phongRepository,
+            ThanhToanAdoRepository thanhToanRepository,
+            KhachHangAdoRepository khachHangRepository,
+            NhanVienAdoRepository nhanVienRepository,
+            DatabaseHelper dbHelper)
         {
             _repository = repository;
             _chiTietRepository = chiTietRepository;
+            _suDungDichVuRepository = suDungDichVuRepository;
             _dichVuRepository = dichVuRepository;
-            _context = context;
+            _phongRepository = phongRepository;
+            _thanhToanRepository = thanhToanRepository;
+            _khachHangRepository = khachHangRepository;
+            _nhanVienRepository = nhanVienRepository;
+            _dbHelper = dbHelper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var datPhongs = await _context.DatPhongs
-                .Include(dp => dp.KhachHang)
-                .Include(dp => dp.NhanVien)
-                .Include(dp => dp.ChiTietDatPhongs).ThenInclude(ct => ct.Phong).ThenInclude(p => p.LoaiPhong)
-                .Include(dp => dp.SuDungDichVus).ThenInclude(sd => sd.DichVu)
-                .ToListAsync();
+            var datPhongs = (await _repository.GetAllAsync()).ToList();
+            foreach (var dp in datPhongs)
+            {
+                dp.ChiTietDatPhongs = (await _chiTietRepository.GetByDatPhongAsync(dp.MaDatPhong)).ToList();
+                    dp.SuDungDichVus = (await _suDungDichVuRepository.GetByDatPhongAsync(dp.MaDatPhong)).ToList();
+                dp.ThanhToans = (await _thanhToanRepository.GetByDatPhongAsync(dp.MaDatPhong)).ToList();
+                dp.KhachHang = await _khachHangRepository.GetByIdAsync(dp.MaKhachHang);
+                dp.NhanVien = dp.MaNhanVien.HasValue ? await _nhanVienRepository.GetByIdAsync(dp.MaNhanVien.Value) : null;
+            }
             return Ok(datPhongs);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var datPhong = await _context.DatPhongs
-                .Include(dp => dp.KhachHang)
-                .Include(dp => dp.NhanVien)
-                .Include(dp => dp.ChiTietDatPhongs).ThenInclude(ct => ct.Phong).ThenInclude(p => p.LoaiPhong)
-                .Include(dp => dp.SuDungDichVus).ThenInclude(sd => sd.DichVu)
-                .Include(dp => dp.ThanhToans)
-                .FirstOrDefaultAsync(dp => dp.MaDatPhong == id);
-
+            var datPhong = await _repository.GetByIdAsync(id);
             if (datPhong == null)
                 return NotFound();
+
+            datPhong.ChiTietDatPhongs = (await _chiTietRepository.GetByDatPhongAsync(datPhong.MaDatPhong)).ToList();
+            datPhong.SuDungDichVus = (await _suDungDichVuRepository.GetByDatPhongAsync(datPhong.MaDatPhong)).ToList();
+            datPhong.ThanhToans = (await _thanhToanRepository.GetByDatPhongAsync(datPhong.MaDatPhong)).ToList();
+            datPhong.KhachHang = await _khachHangRepository.GetByIdAsync(datPhong.MaKhachHang);
+            datPhong.NhanVien = datPhong.MaNhanVien.HasValue ? await _nhanVienRepository.GetByIdAsync(datPhong.MaNhanVien.Value) : null;
+
             return Ok(datPhong);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] DatPhongRequest request)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            // Validate MaKhachHang exists
+            var khachHang = await _khachHangRepository.GetByIdAsync(request.MaKhachHang);
+            if (khachHang == null)
+                return BadRequest($"Khách hàng ID {request.MaKhachHang} không tồn tại");
+
+            // Validate rooms exist
+            foreach (var chiTiet in request.ChiTietDatPhongs)
+            {
+                var phong = await _phongRepository.GetByIdAsync(chiTiet.MaPhong);
+                if (phong == null)
+                    return BadRequest($"Phòng ID {chiTiet.MaPhong} không tồn tại");
+            }
+
+            // Validate services exist if provided
+            if (request.SuDungDichVus != null && request.SuDungDichVus.Count > 0)
+            {
+                foreach (var dichVu in request.SuDungDichVus)
+                {
+                    var service = await _dichVuRepository.GetByIdAsync(dichVu.MaDichVu);
+                    if (service == null)
+                        return BadRequest($"Dịch vụ ID {dichVu.MaDichVu} không tồn tại");
+                }
+            }
+
+            using var conn = _dbHelper.GetConnection();
+            await conn.OpenAsync();
+            using var tx = conn.BeginTransaction();
 
             try
             {
-                // Create DatPhong
                 var datPhong = new DatPhong
                 {
                     MaKhachHang = request.MaKhachHang,
@@ -73,9 +118,9 @@ namespace QLKhachSanApi.Controllers
                     TrangThai = request.TrangThai ?? "Đã đặt"
                 };
 
-                var createdDatPhong = await _repository.AddAsync(datPhong);
+                var createdDatPhong = await _repository.AddAsync(datPhong, conn, tx);
 
-                // Add ChiTietDatPhong
+                // Add ChiTietDatPhong and update room status
                 foreach (var chiTiet in request.ChiTietDatPhongs)
                 {
                     var chiTietDatPhong = new ChiTietDatPhong
@@ -85,14 +130,14 @@ namespace QLKhachSanApi.Controllers
                         DonGia = chiTiet.DonGia,
                         SoDem = chiTiet.SoDem
                     };
-                    await _chiTietRepository.AddAsync(chiTietDatPhong);
+                    await _chiTietRepository.AddAsync(chiTietDatPhong, conn, tx);
 
-                    // Update room status
-                    var phong = await _context.Phongs.FindAsync(chiTiet.MaPhong);
-                    if (phong != null)
+                    // Update room status via SQL in same transaction
+                    using (var cmd = new SqlCommand("UPDATE Phong SET TinhTrang=@TinhTrang WHERE MaPhong=@Id", conn, tx))
                     {
-                        phong.TinhTrang = "Đang ở";
-                        _context.Phongs.Update(phong);
+                        cmd.Parameters.Add(new SqlParameter("@TinhTrang", SqlDbType.NVarChar, 50) { Value = "Đang ở" });
+                        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = chiTiet.MaPhong });
+                        await cmd.ExecuteNonQueryAsync();
                     }
                 }
 
@@ -108,19 +153,22 @@ namespace QLKhachSanApi.Controllers
                             SoLuong = dichVu.SoLuong,
                             DonGia = dichVu.DonGia
                         };
-                        await _dichVuRepository.AddAsync(suDungDichVu);
+                        await _suDungDichVuRepository.AddAsync(suDungDichVu, conn, tx);
                     }
                 }
 
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                tx.Commit();
 
                 return CreatedAtAction(nameof(GetById), new { id = createdDatPhong.MaDatPhong }, createdDatPhong);
             }
             catch
             {
-                await transaction.RollbackAsync();
+                tx.Rollback();
                 throw;
+            }
+            finally
+            {
+                await conn.CloseAsync();
             }
         }
 
@@ -140,31 +188,43 @@ namespace QLKhachSanApi.Controllers
         [HttpPut("{id}/checkout")]
         public async Task<IActionResult> CheckOut(int id)
         {
-            var datPhong = await _repository.GetByIdAsync(id);
-            if (datPhong == null)
-                return NotFound();
+            using var conn = _dbHelper.GetConnection();
+            await conn.OpenAsync();
+            using var tx = conn.BeginTransaction();
 
-            datPhong.TrangThai = "Đã trả";
-
-            // Update room status back to available
-            var chiTietPhongs = await _context.ChiTietDatPhongs
-                .Where(ct => ct.MaDatPhong == id)
-                .ToListAsync();
-
-            foreach (var chiTiet in chiTietPhongs)
+            try
             {
-                var phong = await _context.Phongs.FindAsync(chiTiet.MaPhong);
-                if (phong != null)
+                var datPhong = await _repository.GetByIdAsync(id);
+                if (datPhong == null)
+                    return NotFound();
+
+                datPhong.TrangThai = "Đã trả";
+
+                await _repository.UpdateAsync(datPhong, conn, tx);
+
+                var chiTietPhongs = (await _chiTietRepository.GetByDatPhongAsync(id)).ToList();
+                foreach (var chiTiet in chiTietPhongs)
                 {
-                    phong.TinhTrang = "Trống";
-                    _context.Phongs.Update(phong);
+                    using (var cmd = new SqlCommand("UPDATE Phong SET TinhTrang=@TinhTrang WHERE MaPhong=@Id", conn, tx))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@TinhTrang", SqlDbType.NVarChar, 50) { Value = "Trống" });
+                        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = chiTiet.MaPhong });
+                        await cmd.ExecuteNonQueryAsync();
+                    }
                 }
+
+                tx.Commit();
+                return Ok(datPhong);
             }
-
-            await _repository.UpdateAsync(datPhong);
-            await _context.SaveChangesAsync();
-
-            return Ok(datPhong);
+            catch
+            {
+                tx.Rollback();
+                throw;
+            }
+            finally
+            {
+                await conn.CloseAsync();
+            }
         }
 
         [HttpPut("{id}")]

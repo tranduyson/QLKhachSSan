@@ -1,3 +1,4 @@
+using System;
 using QLKhachSanApi.DAL;
 using QLKhachSanApi.Models;
 using System.Data;
@@ -5,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace QLKhachSanApi.Repositories
 {
-    public class PhongAdoRepository : IRepository<Phong>
+    public class PhongAdoRepository : IPhongRepository
     {
         private readonly DatabaseHelper _db;
         public PhongAdoRepository(DatabaseHelper db) { _db = db; }
@@ -40,6 +41,33 @@ namespace QLKhachSanApi.Repositories
             return null;
         }
 
+            public async Task<IEnumerable<Phong>> GetAvailableRoomsAsync(DateTime checkIn, DateTime checkOut)
+            {
+                var list = new List<Phong>();
+                using (var conn = _db.GetConnection())
+                using (var cmd = new SqlCommand(@"SELECT p.MaPhong, p.SoPhong, p.MaLoaiPhong, p.TinhTrang
+    FROM Phong p
+    WHERE p.TinhTrang = N'Trống'
+      AND NOT EXISTS (
+        SELECT 1 FROM ChiTietDatPhong ct
+        JOIN DatPhong dp ON ct.MaDatPhong = dp.MaDatPhong
+        WHERE ct.MaPhong = p.MaPhong
+          AND dp.TrangThai <> N'Hủy'
+          AND dp.NgayNhan <= @CheckOut
+          AND dp.NgayTra >= @CheckIn
+    )", conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@CheckIn", SqlDbType.DateTime) { Value = checkIn });
+                    cmd.Parameters.Add(new SqlParameter("@CheckOut", SqlDbType.DateTime) { Value = checkOut });
+                    await conn.OpenAsync();
+                    using (var r = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await r.ReadAsync()) list.Add(Map(r));
+                    }
+                }
+                return list;
+            }
+
         public Task<IEnumerable<Phong>> FindAsync(System.Linq.Expressions.Expression<Func<Phong, bool>> predicate)
         {
             throw new NotSupportedException();
@@ -61,6 +89,7 @@ VALUES (@SoPhong, @MaLoaiPhong, @TinhTrang)", conn))
                     if (await r.ReadAsync()) return Map(r);
                 }
             }
+
             return e;
         }
 
@@ -110,5 +139,6 @@ VALUES (@SoPhong, @MaLoaiPhong, @TinhTrang)", conn))
                 TinhTrang = r.GetString(r.GetOrdinal("TinhTrang"))
             };
         }
+
     }
 }

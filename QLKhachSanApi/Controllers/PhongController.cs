@@ -10,26 +10,24 @@ namespace QLKhachSanApi.Controllers
     [ApiController]
     public class PhongController : ControllerBase
     {
-        private readonly IRepository<Phong> _repository;
-        private readonly HotelDbContext _context;
+        private readonly IPhongRepository _repository;
 
-        public PhongController(IRepository<Phong> repository, HotelDbContext context)
+        public PhongController(IPhongRepository repo)
         {
-            _repository = repository;
-            _context = context;
+            _repository = repo;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var phongs = await _context.Phongs.Include(p => p.LoaiPhong).ToListAsync();
+            var phongs = await _repository.GetAllAsync();
             return Ok(phongs);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var phong = await _context.Phongs.Include(p => p.LoaiPhong).FirstOrDefaultAsync(p => p.MaPhong == id);
+            var phong = await _repository.GetByIdAsync(id);
             if (phong == null)
                 return NotFound();
             return Ok(phong);
@@ -38,19 +36,7 @@ namespace QLKhachSanApi.Controllers
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableRooms([FromQuery] DateTime checkIn, [FromQuery] DateTime checkOut)
         {
-            var bookedRooms = await _context.ChiTietDatPhongs
-                .Include(ct => ct.DatPhong)
-                .Where(ct => ct.DatPhong.TrangThai != "Hủy" &&
-                           ((ct.DatPhong.NgayNhan <= checkOut && ct.DatPhong.NgayTra >= checkIn)))
-                .Select(ct => ct.MaPhong)
-                .Distinct()
-                .ToListAsync();
-
-            var availableRooms = await _context.Phongs
-                .Include(p => p.LoaiPhong)
-                .Where(p => !bookedRooms.Contains(p.MaPhong) && p.TinhTrang == "Trống")
-                .ToListAsync();
-
+            var availableRooms = await _repository.GetAvailableRoomsAsync(checkIn, checkOut);
             return Ok(availableRooms);
         }
 
@@ -61,7 +47,7 @@ namespace QLKhachSanApi.Controllers
                 return BadRequest(ModelState);
 
             var created = await _repository.AddAsync(phong);
-            return CreatedAtAction(nameof(GetById), new { id = created.MaPhong }, created);
+            return CreatedAtAction(nameof(GetById), new { id = created.SoPhong }, created);
         }
 
         [HttpPut("{id}")]

@@ -1,77 +1,76 @@
-using Microsoft.EntityFrameworkCore;
-using QLKhachSanApi.Models;
-
 namespace QLKhachSanApi.DAL
 {
-    public class HotelDbContext : DbContext
+    /// <summary>
+    /// ADO.NET configuration class for Hotel database.
+    /// Contains table names and column constants for ADO operations.
+    /// </summary>
+    public class HotelDbContext
     {
-        public HotelDbContext(DbContextOptions<HotelDbContext> options) : base(options)
-        {
-        }
+        // Table names
+        public const string TableLoaiPhong = "LoaiPhong";
+        public const string TablePhong = "Phong";
+        public const string TableKhachHang = "KhachHang";
+        public const string TableNhanVien = "NhanVien";
+        public const string TableDichVu = "DichVu";
+        public const string TableDatPhong = "DatPhong";
+        public const string TableChiTietDatPhong = "ChiTietDatPhong";
+        public const string TableSuDungDichVu = "SuDungDichVu";
+        public const string TableThanhToan = "ThanhToan";
 
-        public DbSet<LoaiPhong> LoaiPhongs { get; set; }
-        public DbSet<Phong> Phongs { get; set; }
-        public DbSet<KhachHang> KhachHangs { get; set; }
-        public DbSet<NhanVien> NhanViens { get; set; }
-        public DbSet<DichVu> DichVus { get; set; }
-        public DbSet<DatPhong> DatPhongs { get; set; }
-        public DbSet<ChiTietDatPhong> ChiTietDatPhongs { get; set; }
-        public DbSet<SuDungDichVu> SuDungDichVus { get; set; }
-        public DbSet<ThanhToan> ThanhToans { get; set; }
+        // Column constants for LoaiPhong
+        public const string ColMaLoaiPhong = "MaLoaiPhong";
+        public const string ColTenLoaiPhong = "TenLoaiPhong";
+        public const string ColGiaMoiDem = "GiaMoiDem";
+        public const string ColMoTa = "MoTa";
+        public const string ColSoGiuong = "SoGiuong";
+        public const string ColDienTich = "DienTich";
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+        // Column constants for Phong
+        public const string ColMaPhong = "MaPhong";
+        public const string ColSoPhong = "SoPhong";
+        public const string ColTinhTrang = "TinhTrang";
 
-            // Configure computed columns
-            modelBuilder.Entity<ChiTietDatPhong>()
-                .Property(p => p.ThanhTien)
-                .HasComputedColumnSql("[DonGia] * [SoDem]");
+        // Column constants for KhachHang
+        public const string ColMaKhachHang = "MaKhachHang";
+        public const string ColHoTen = "HoTen";
+        public const string ColSoDienThoai = "SoDienThoai";
+        public const string ColCCCD = "CCCD";
+        public const string ColDiaChi = "DiaChi";
+        public const string ColGhiChu = "GhiChu";
 
-            modelBuilder.Entity<SuDungDichVu>()
-                .Property(p => p.ThanhTien)
-                .HasComputedColumnSql("[SoLuong] * [DonGia]");
+        // Column constants for NhanVien
+        public const string ColMaNhanVien = "MaNhanVien";
+        public const string ColTenDangNhap = "TenDangNhap";
+        public const string ColMatKhau = "MatKhau";
+        public const string ColChucVu = "ChucVu";
+        public const string ColTrangThai = "TrangThai";
 
-            // Configure relationships
-            modelBuilder.Entity<Phong>()
-                .HasOne(p => p.LoaiPhong)
-                .WithMany(lp => lp.Phongs)
-                .HasForeignKey(p => p.MaLoaiPhong);
+        // Column constants for DichVu
+        public const string ColMaDichVu = "MaDichVu";
+        public const string ColTenDichVu = "TenDichVu";
+        public const string ColDonGia = "DonGia";
+        public const string ColDonViTinh = "DonViTinh";
 
-            modelBuilder.Entity<DatPhong>()
-                .HasOne(dp => dp.KhachHang)
-                .WithMany(kh => kh.DatPhongs)
-                .HasForeignKey(dp => dp.MaKhachHang);
+        // Column constants for DatPhong
+        public const string ColMaDatPhong = "MaDatPhong";
+        public const string ColNgayDat = "NgayDat";
+        public const string ColNgayNhan = "NgayNhan";
+        public const string ColNgayTra = "NgayTra";
+        public const string ColTongTien = "TongTien";
 
-            modelBuilder.Entity<DatPhong>()
-                .HasOne(dp => dp.NhanVien)
-                .WithMany(nv => nv.DatPhongs)
-                .HasForeignKey(dp => dp.MaNhanVien);
+        // Column constants for ChiTietDatPhong
+        public const string ColMaCT = "MaCT";
+        public const string ColThanhTien = "ThanhTien";
+        public const string ColSoDem = "SoDem";
 
-            modelBuilder.Entity<ChiTietDatPhong>()
-                .HasOne(ct => ct.DatPhong)
-                .WithMany(dp => dp.ChiTietDatPhongs)
-                .HasForeignKey(ct => ct.MaDatPhong);
+        // Column constants for SuDungDichVu
+        public const string ColMaSuDung = "MaSuDung";
+        public const string ColSoLuong = "SoLuong";
 
-            modelBuilder.Entity<ChiTietDatPhong>()
-                .HasOne(ct => ct.Phong)
-                .WithMany(p => p.ChiTietDatPhongs)
-                .HasForeignKey(ct => ct.MaPhong);
-
-            modelBuilder.Entity<SuDungDichVu>()
-                .HasOne(sd => sd.DatPhong)
-                .WithMany(dp => dp.SuDungDichVus)
-                .HasForeignKey(sd => sd.MaDatPhong);
-
-            modelBuilder.Entity<SuDungDichVu>()
-                .HasOne(sd => sd.DichVu)
-                .WithMany(dv => dv.SuDungDichVus)
-                .HasForeignKey(sd => sd.MaDichVu);
-
-            modelBuilder.Entity<ThanhToan>()
-                .HasOne(tt => tt.DatPhong)
-                .WithMany(dp => dp.ThanhToans)
-                .HasForeignKey(tt => tt.MaDatPhong);
-        }
+        // Column constants for ThanhToan
+        public const string ColMaThanhToan = "MaThanhToan";
+        public const string ColNgayThanhToan = "NgayThanhToan";
+        public const string ColSoTien = "SoTien";
+        public const string ColPhuongThuc = "PhuongThuc";
     }
 }

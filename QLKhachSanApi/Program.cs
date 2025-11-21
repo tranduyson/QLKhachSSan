@@ -1,17 +1,33 @@
 ﻿using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<QLKhachSanApi.DAL.HotelDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HotelDb")));
-
-// Register repositories
-builder.Services.AddScoped(typeof(QLKhachSanApi.Repositories.IRepository<>), typeof(QLKhachSanApi.Repositories.Repository<>));
-// ADO.NET helpers and overrides
+// ADO.NET configuration
 builder.Services.AddSingleton<QLKhachSanApi.DAL.DatabaseHelper>();
 builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.DichVu>, QLKhachSanApi.Repositories.DichVuAdoRepository>();
+// Register ADO repositories for entities that have ADO implementations
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IPhongRepository, QLKhachSanApi.Repositories.PhongAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.Phong>, QLKhachSanApi.Repositories.PhongAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.KhachHang>, QLKhachSanApi.Repositories.KhachHangAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.LoaiPhong>, QLKhachSanApi.Repositories.LoaiPhongAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.INhanVienRepository, QLKhachSanApi.Repositories.NhanVienAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.NhanVien>, QLKhachSanApi.Repositories.NhanVienAdoRepository>();
+
+// New ADO repositories for booking/payment
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.DatPhong>, QLKhachSanApi.Repositories.DatPhongAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.ChiTietDatPhong>, QLKhachSanApi.Repositories.ChiTietDatPhongAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.SuDungDichVu>, QLKhachSanApi.Repositories.SuDungDichVuAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.IRepository<QLKhachSanApi.Models.ThanhToan>, QLKhachSanApi.Repositories.ThanhToanAdoRepository>();
+// Register concrete ADO classes so controllers can request them directly
+builder.Services.AddScoped<QLKhachSanApi.Repositories.DatPhongAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.ChiTietDatPhongAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.SuDungDichVuAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.ThanhToanAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.PhongAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.KhachHangAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.NhanVienAdoRepository>();
+builder.Services.AddScoped<QLKhachSanApi.Repositories.DichVuAdoRepository>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();

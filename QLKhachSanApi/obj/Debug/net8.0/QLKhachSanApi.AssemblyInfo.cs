@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QLKhachSanApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a18514fd5be7b92c7c96ba9913a98dc8fef4abf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+71a54ec7bf7010bb3fc96016c7bdb323031e66f8")]
 [assembly: System.Reflection.AssemblyProductAttribute("QLKhachSanApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QLKhachSanApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1053,12 +1053,6 @@
   "components": {
     "schemas": {
       "ChiTietDatPhong": {
-        "required": [
-          "donGia",
-          "maDatPhong",
-          "maPhong",
-          "soDem"
-        ],
         "type": "object",
         "properties": {
           "maCT": {
@@ -1084,12 +1078,6 @@
           "thanhTien": {
             "type": "number",
             "format": "double"
-          },
-          "datPhong": {
-            "$ref": "#/components/schemas/DatPhong"
-          },
-          "phong": {
-            "$ref": "#/components/schemas/Phong"
           }
         },
         "additionalProperties": false
@@ -1113,12 +1101,6 @@
         "additionalProperties": false
       },
       "DatPhong": {
-        "required": [
-          "maKhachHang",
-          "ngayDat",
-          "ngayNhan",
-          "ngayTra"
-        ],
         "type": "object",
         "properties": {
           "maDatPhong": {
@@ -1151,8 +1133,6 @@
             "format": "double"
           },
           "trangThai": {
-            "maxLength": 50,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },
@@ -1232,10 +1212,6 @@
         "additionalProperties": false
       },
       "DichVu": {
-        "required": [
-          "donGia",
-          "tenDichVu"
-        ],
         "type": "object",
         "properties": {
           "maDichVu": {
@@ -1243,40 +1219,25 @@
             "format": "int32"
           },
           "tenDichVu": {
-            "maxLength": 100,
-            "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "donGia": {
             "type": "number",
             "format": "double"
           },
           "donViTinh": {
-            "maxLength": 50,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },
           "ghiChu": {
-            "maxLength": 200,
-            "minLength": 0,
             "type": "string",
-            "nullable": true
-          },
-          "suDungDichVus": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SuDungDichVu"
-            },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
       "KhachHang": {
-        "required": [
-          "hoTen"
-        ],
         "type": "object",
         "properties": {
           "maKhachHang": {
@@ -1284,31 +1245,22 @@
             "format": "int32"
           },
           "hoTen": {
-            "maxLength": 100,
-            "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "soDienThoai": {
-            "maxLength": 20,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },
           "cccd": {
-            "maxLength": 20,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },
           "diaChi": {
-            "maxLength": 200,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },
           "ghiChu": {
-            "maxLength": 500,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           }
@@ -1316,10 +1268,6 @@
         "additionalProperties": false
       },
       "LoaiPhong": {
-        "required": [
-          "giaMoiDem",
-          "tenLoaiPhong"
-        ],
         "type": "object",
         "properties": {
           "maLoaiPhong": {
@@ -1327,17 +1275,14 @@
             "format": "int32"
           },
           "tenLoaiPhong": {
-            "maxLength": 100,
-            "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "giaMoiDem": {
             "type": "number",
             "format": "double"
           },
           "moTa": {
-            "maxLength": 500,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },
@@ -1367,11 +1312,6 @@
         "additionalProperties": false
       },
       "NhanVien": {
-        "required": [
-          "hoTen",
-          "matKhau",
-          "tenDangNhap"
-        ],
         "type": "object",
         "properties": {
           "maNhanVien": {
@@ -1379,29 +1319,22 @@
             "format": "int32"
           },
           "tenDangNhap": {
-            "maxLength": 50,
-            "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "matKhau": {
-            "maxLength": 100,
-            "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "hoTen": {
-            "maxLength": 100,
-            "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "chucVu": {
-            "maxLength": 50,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },
           "soDienThoai": {
-            "maxLength": 20,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },
@@ -1413,11 +1346,6 @@
         "additionalProperties": false
       },
       "Phong": {
-        "required": [
-          "maLoaiPhong",
-          "soPhong",
-          "tinhTrang"
-        ],
         "type": "object",
         "properties": {
           "maPhong": {
@@ -1430,39 +1358,21 @@
             "readOnly": true
           },
           "soPhong": {
-            "maxLength": 10,
-            "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "maLoaiPhong": {
             "type": "integer",
             "format": "int32"
           },
           "tinhTrang": {
-            "maxLength": 50,
-            "minLength": 0,
-            "type": "string"
-          },
-          "loaiPhong": {
-            "$ref": "#/components/schemas/LoaiPhong"
-          },
-          "chiTietDatPhongs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ChiTietDatPhong"
-            },
+            "type": "string",
             "nullable": true
           }
         },
         "additionalProperties": false
       },
       "SuDungDichVu": {
-        "required": [
-          "donGia",
-          "maDatPhong",
-          "maDichVu",
-          "soLuong"
-        ],
         "type": "object",
         "properties": {
           "maSuDung": {
@@ -1488,12 +1398,6 @@
           "thanhTien": {
             "type": "number",
             "format": "double"
-          },
-          "datPhong": {
-            "$ref": "#/components/schemas/DatPhong"
-          },
-          "dichVu": {
-            "$ref": "#/components/schemas/DichVu"
           }
         },
         "additionalProperties": false
@@ -1517,11 +1421,6 @@
         "additionalProperties": false
       },
       "ThanhToan": {
-        "required": [
-          "maDatPhong",
-          "ngayThanhToan",
-          "soTien"
-        ],
         "type": "object",
         "properties": {
           "maThanhToan": {
@@ -1541,14 +1440,10 @@
             "format": "double"
           },
           "phuongThuc": {
-            "maxLength": 50,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },
           "ghiChu": {
-            "maxLength": 200,
-            "minLength": 0,
             "type": "string",
             "nullable": true
           },

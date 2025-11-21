@@ -10,43 +10,46 @@ namespace QLKhachSanApi.Controllers
     [ApiController]
     public class ThanhToanController : ControllerBase
     {
-        private readonly IRepository<ThanhToan> _repository;
-        private readonly HotelDbContext _context;
+        private readonly ThanhToanAdoRepository _repository;
+        private readonly DatPhongAdoRepository _datPhongRepository;
 
-        public ThanhToanController(IRepository<ThanhToan> repository, HotelDbContext context)
+        public ThanhToanController(ThanhToanAdoRepository repository, DatPhongAdoRepository datPhongRepository)
         {
             _repository = repository;
-            _context = context;
+            _datPhongRepository = datPhongRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var thanhToans = await _context.ThanhToans
-                .Include(tt => tt.DatPhong)
-                .ToListAsync();
+            var thanhToans = (await _repository.GetAllAsync()).ToList();
+            foreach (var tt in thanhToans)
+            {
+                tt.DatPhong = await _datPhongRepository.GetByIdAsync(tt.MaDatPhong);
+            }
             return Ok(thanhToans);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var thanhToan = await _context.ThanhToans
-                .Include(tt => tt.DatPhong)
-                .FirstOrDefaultAsync(tt => tt.MaThanhToan == id);
+            var thanhToan = await _repository.GetByIdAsync(id);
 
             if (thanhToan == null)
                 return NotFound();
+
+            thanhToan.DatPhong = await _datPhongRepository.GetByIdAsync(thanhToan.MaDatPhong);
             return Ok(thanhToan);
         }
 
         [HttpGet("datphong/{maDatPhong}")]
         public async Task<IActionResult> GetByDatPhong(int maDatPhong)
         {
-            var thanhToans = await _context.ThanhToans
-                .Include(tt => tt.DatPhong)
-                .Where(tt => tt.MaDatPhong == maDatPhong)
-                .ToListAsync();
+            var thanhToans = (await _repository.GetByDatPhongAsync(maDatPhong)).ToList();
+            foreach (var tt in thanhToans)
+            {
+                tt.DatPhong = await _datPhongRepository.GetByIdAsync(tt.MaDatPhong);
+            }
             return Ok(thanhToans);
         }
 

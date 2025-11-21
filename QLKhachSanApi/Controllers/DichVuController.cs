@@ -44,8 +44,8 @@ namespace QLKhachSanApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] DichVu dichVu)
         {
-            if (id != dichVu.MaDichVu)
-                return BadRequest();
+            // Ensure the ID from URL matches the object
+            dichVu.MaDichVu = id;
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -57,10 +57,6 @@ namespace QLKhachSanApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var exists = await _repository.ExistsAsync(id);
-            if (!exists)
-                return NotFound();
-
             await _repository.DeleteAsync(id);
             return NoContent();
         }

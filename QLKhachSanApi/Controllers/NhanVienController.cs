@@ -8,9 +8,9 @@ namespace QLKhachSanApi.Controllers
     [ApiController]
     public class NhanVienController : ControllerBase
     {
-        private readonly IRepository<NhanVien> _repository;
+        private readonly INhanVienRepository _repository;
 
-        public NhanVienController(IRepository<NhanVien> repository)
+        public NhanVienController(INhanVienRepository repository)
         {
             _repository = repository;
         }
@@ -34,12 +34,7 @@ namespace QLKhachSanApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var nhanViens = await _repository.FindAsync(nv =>
-                nv.TenDangNhap == request.email &&
-                nv.MatKhau == request.password &&
-                nv.TrangThai == 1);
-
-            var nhanVien = nhanViens.FirstOrDefault();
+            var nhanVien = await _repository.FindByCredentialsAsync(request.email, request.password);
             if (nhanVien == null)
                 return Unauthorized("Invalid credentials");
 
