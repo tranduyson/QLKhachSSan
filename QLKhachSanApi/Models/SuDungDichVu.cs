@@ -13,5 +13,6 @@ namespace QLKhachSanApi.Models
         public decimal DonGia { get; set; }
 
         public decimal ThanhTien { get; set; }
+        public string TenDichVu { get; set; }
     }
 }

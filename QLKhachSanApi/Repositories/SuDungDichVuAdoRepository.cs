@@ -14,7 +14,17 @@ namespace QLKhachSanApi.Repositories
         {
             var list = new List<SuDungDichVu>();
             using (var conn = _db.GetConnection())
-            using (var cmd = new SqlCommand("SELECT MaSuDung, MaDatPhong, MaDichVu, SoLuong, DonGia, ThanhTien FROM SuDungDichVu", conn))
+            using (var cmd = new SqlCommand(@"
+                SELECT 
+                    sd.MaSuDung, 
+                    sd.MaDatPhong, 
+                    sd.MaDichVu, 
+                    dv.TenDichVu,
+                    sd.SoLuong, 
+                    sd.DonGia, 
+                    sd.ThanhTien 
+                FROM SuDungDichVu sd
+                LEFT JOIN DichVu dv ON sd.MaDichVu = dv.MaDichVu", conn))
             {
                 await conn.OpenAsync();
                 using (var r = await cmd.ExecuteReaderAsync())
@@ -28,7 +38,18 @@ namespace QLKhachSanApi.Repositories
         public async Task<SuDungDichVu?> GetByIdAsync(int id)
         {
             using (var conn = _db.GetConnection())
-            using (var cmd = new SqlCommand("SELECT MaSuDung, MaDatPhong, MaDichVu, SoLuong, DonGia, ThanhTien FROM SuDungDichVu WHERE MaSuDung=@Id", conn))
+            using (var cmd = new SqlCommand(@"
+                SELECT 
+                    sd.MaSuDung, 
+                    sd.MaDatPhong, 
+                    sd.MaDichVu, 
+                    dv.TenDichVu,
+                    sd.SoLuong, 
+                    sd.DonGia, 
+                    sd.ThanhTien 
+                FROM SuDungDichVu sd
+                LEFT JOIN DichVu dv ON sd.MaDichVu = dv.MaDichVu
+                WHERE sd.MaSuDung=@Id", conn))
             {
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = id });
                 await conn.OpenAsync();
@@ -48,9 +69,28 @@ namespace QLKhachSanApi.Repositories
         public async Task<SuDungDichVu> AddAsync(SuDungDichVu e)
         {
             using (var conn = _db.GetConnection())
-            using (var cmd = new SqlCommand(@"INSERT INTO SuDungDichVu(MaDatPhong, MaDichVu, SoLuong, DonGia)
-OUTPUT INSERTED.MaSuDung, INSERTED.MaDatPhong, INSERTED.MaDichVu, INSERTED.SoLuong, INSERTED.DonGia, INSERTED.ThanhTien
-VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @DonGia)", conn))
+            using (var cmd = new SqlCommand(@"
+                INSERT INTO SuDungDichVu(MaDatPhong, MaDichVu, SoLuong, DonGia)
+                OUTPUT 
+                    INSERTED.MaSuDung, 
+                    INSERTED.MaDatPhong, 
+                    INSERTED.MaDichVu, 
+                    INSERTED.SoLuong, 
+                    INSERTED.DonGia, 
+                    INSERTED.ThanhTien
+                VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @DonGia);
+                
+                SELECT 
+                    sd.MaSuDung, 
+                    sd.MaDatPhong, 
+                    sd.MaDichVu, 
+                    dv.TenDichVu,
+                    sd.SoLuong, 
+                    sd.DonGia, 
+                    sd.ThanhTien 
+                FROM SuDungDichVu sd
+                LEFT JOIN DichVu dv ON sd.MaDichVu = dv.MaDichVu
+                WHERE sd.MaSuDung = SCOPE_IDENTITY()", conn))
             {
                 cmd.Parameters.Add(new SqlParameter("@MaDatPhong", SqlDbType.Int) { Value = e.MaDatPhong });
                 cmd.Parameters.Add(new SqlParameter("@MaDichVu", SqlDbType.Int) { Value = e.MaDichVu });
@@ -59,6 +99,9 @@ VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @DonGia)", conn))
                 await conn.OpenAsync();
                 using (var r = await cmd.ExecuteReaderAsync())
                 {
+                    // Skip OUTPUT result
+                    await r.NextResultAsync();
+                    // Read actual result with TenDichVu
                     if (await r.ReadAsync()) return Map(r);
                 }
             }
@@ -67,9 +110,21 @@ VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @DonGia)", conn))
 
         public async Task<SuDungDichVu> AddAsync(SuDungDichVu e, SqlConnection conn, SqlTransaction tx)
         {
-            using (var cmd = new SqlCommand(@"INSERT INTO SuDungDichVu(MaDatPhong, MaDichVu, SoLuong, DonGia)
-OUTPUT INSERTED.MaSuDung, INSERTED.MaDatPhong, INSERTED.MaDichVu, INSERTED.SoLuong, INSERTED.DonGia, INSERTED.ThanhTien
-VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @DonGia)", conn, tx))
+            using (var cmd = new SqlCommand(@"
+                INSERT INTO SuDungDichVu(MaDatPhong, MaDichVu, SoLuong, DonGia)
+                VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @DonGia);
+                
+                SELECT 
+                    sd.MaSuDung, 
+                    sd.MaDatPhong, 
+                    sd.MaDichVu, 
+                    dv.TenDichVu,
+                    sd.SoLuong, 
+                    sd.DonGia, 
+                    sd.ThanhTien 
+                FROM SuDungDichVu sd
+                LEFT JOIN DichVu dv ON sd.MaDichVu = dv.MaDichVu
+                WHERE sd.MaSuDung = SCOPE_IDENTITY()", conn, tx))
             {
                 cmd.Parameters.Add(new SqlParameter("@MaDatPhong", SqlDbType.Int) { Value = e.MaDatPhong });
                 cmd.Parameters.Add(new SqlParameter("@MaDichVu", SqlDbType.Int) { Value = e.MaDichVu });
@@ -87,7 +142,18 @@ VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @DonGia)", conn, tx))
         {
             var list = new List<SuDungDichVu>();
             using (var conn = _db.GetConnection())
-            using (var cmd = new SqlCommand("SELECT MaSuDung, MaDatPhong, MaDichVu, SoLuong, DonGia, ThanhTien FROM SuDungDichVu WHERE MaDatPhong=@MaDatPhong", conn))
+            using (var cmd = new SqlCommand(@"
+                SELECT 
+                    sd.MaSuDung, 
+                    sd.MaDatPhong, 
+                    sd.MaDichVu, 
+                    dv.TenDichVu,
+                    sd.SoLuong, 
+                    sd.DonGia, 
+                    sd.ThanhTien 
+                FROM SuDungDichVu sd
+                LEFT JOIN DichVu dv ON sd.MaDichVu = dv.MaDichVu
+                WHERE sd.MaDatPhong=@MaDatPhong", conn))
             {
                 cmd.Parameters.Add(new SqlParameter("@MaDatPhong", SqlDbType.Int) { Value = maDatPhong });
                 await conn.OpenAsync();
@@ -102,7 +168,13 @@ VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @DonGia)", conn, tx))
         public async Task UpdateAsync(SuDungDichVu e)
         {
             using (var conn = _db.GetConnection())
-            using (var cmd = new SqlCommand(@"UPDATE SuDungDichVu SET MaDatPhong=@MaDatPhong, MaDichVu=@MaDichVu, SoLuong=@SoLuong, DonGia=@DonGia WHERE MaSuDung=@Id", conn))
+            using (var cmd = new SqlCommand(@"
+                UPDATE SuDungDichVu 
+                SET MaDatPhong=@MaDatPhong, 
+                    MaDichVu=@MaDichVu, 
+                    SoLuong=@SoLuong, 
+                    DonGia=@DonGia 
+                WHERE MaSuDung=@Id", conn))
             {
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = e.MaSuDung });
                 cmd.Parameters.Add(new SqlParameter("@MaDatPhong", SqlDbType.Int) { Value = e.MaDatPhong });
@@ -143,6 +215,7 @@ VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @DonGia)", conn, tx))
                 MaSuDung = r.GetInt32(r.GetOrdinal("MaSuDung")),
                 MaDatPhong = r.GetInt32(r.GetOrdinal("MaDatPhong")),
                 MaDichVu = r.GetInt32(r.GetOrdinal("MaDichVu")),
+                TenDichVu = r.IsDBNull(r.GetOrdinal("TenDichVu")) ? null : r.GetString(r.GetOrdinal("TenDichVu")),
                 SoLuong = r.GetInt32(r.GetOrdinal("SoLuong")),
                 DonGia = r.GetDecimal(r.GetOrdinal("DonGia")),
                 ThanhTien = r.GetDecimal(r.GetOrdinal("ThanhTien"))

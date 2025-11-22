@@ -1067,6 +1067,18 @@
             "type": "integer",
             "format": "int32"
           },
+          "soPhong": {
+            "type": "string",
+            "nullable": true
+          },
+          "maLoaiPhong": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tenLoaiPhong": {
+            "type": "string",
+            "nullable": true
+          },
           "donGia": {
             "type": "number",
             "format": "double"
@@ -1398,6 +1410,10 @@
           "thanhTien": {
             "type": "number",
             "format": "double"
+          },
+          "tenDichVu": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

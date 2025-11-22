@@ -8,6 +8,12 @@ namespace QLKhachSanApi.Models
 
         public int MaPhong { get; set; }
 
+        public string SoPhong { get; set; } // Số phòng
+
+        public int MaLoaiPhong { get; set; } // Mã loại phòng
+
+        public string TenLoaiPhong { get; set; } // Tên loại phòng
+
         public decimal DonGia { get; set; }
 
         public int SoDem { get; set; }
