@@ -17,6 +17,9 @@ namespace QLKhachSanApi.Models
         public bool TrangThai { get; set; }
 
         // Populated by ADO controllers when needed
+        // Ignore during JSON (de)serialization to avoid client sending nested DatPhong objects
+        // which cause binding errors when they are sent as ids or other shapes.
+        [System.Text.Json.Serialization.JsonIgnore]
         public DatPhong? DatPhong { get; set; }
     }
 }

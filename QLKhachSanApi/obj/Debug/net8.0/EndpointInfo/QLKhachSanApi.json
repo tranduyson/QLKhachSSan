@@ -1465,9 +1465,6 @@
           },
           "trangThai": {
             "type": "boolean"
-          },
-          "datPhong": {
-            "$ref": "#/components/schemas/DatPhong"
           }
         },
         "additionalProperties": false

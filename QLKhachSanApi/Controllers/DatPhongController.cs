@@ -48,16 +48,26 @@ namespace QLKhachSanApi.Controllers
         public async Task<IActionResult> GetAll()
         {
             var datPhongs = (await _repository.GetAllAsync()).ToList();
+
             foreach (var dp in datPhongs)
             {
+                // Load dữ liệu chi tiết
                 dp.ChiTietDatPhongs = (await _chiTietRepository.GetByDatPhongAsync(dp.MaDatPhong)).ToList();
-                    dp.SuDungDichVus = (await _suDungDichVuRepository.GetByDatPhongAsync(dp.MaDatPhong)).ToList();
+                dp.SuDungDichVus = (await _suDungDichVuRepository.GetByDatPhongAsync(dp.MaDatPhong)).ToList();
                 dp.ThanhToans = (await _thanhToanRepository.GetByDatPhongAsync(dp.MaDatPhong)).ToList();
                 dp.KhachHang = await _khachHangRepository.GetByIdAsync(dp.MaKhachHang);
                 dp.NhanVien = dp.MaNhanVien.HasValue ? await _nhanVienRepository.GetByIdAsync(dp.MaNhanVien.Value) : null;
+
+                // 👉 Tính lại TongTien dựa vào ThanhTien
+                var tongTienChiTiet = dp.ChiTietDatPhongs.Sum(x => x.ThanhTien);
+                var tongTienDichVu = dp.SuDungDichVus.Sum(x => x.ThanhTien);
+
+                dp.TongTien = tongTienChiTiet + tongTienDichVu;
             }
+
             return Ok(datPhongs);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
