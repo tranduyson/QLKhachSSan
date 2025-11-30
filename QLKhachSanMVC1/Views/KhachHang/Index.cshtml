@@ -1,0 +1,47 @@
+@model IEnumerable<HotelManagement.Models.KhachHang>
+@{
+    ViewData["Title"] = "Danh sách khách hàng";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Danh sách khách hàng</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Thêm khách hàng
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Mã KH</th>
+                <th scope="col">Tên khách hàng</th>
+                <th scope="col">Số điện thoại</th>
+                <th scope="col">Căn cước</th>
+                <th scope="col">Ghi chú</th>
+                <th scope="col">Địa chỉ</th>
+                <th scope="col" class="text-end">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.maKhachHang</td>
+                    <td class="fw-semibold">@item.hoTen</td>
+                    <td>@item.SoDienThoai</td>
+                    <td>@item.cccd</td>
+                    <td>@item.ghiChu</td>
+                    <td>@item.DiaChi</td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@item.maKhachHang" class="btn btn-sm btn-outline-secondary me-1">Chi tiết</a>
+                        <a asp-action="Edit" asp-route-id="@item.maKhachHang" class="btn btn-sm btn-outline-primary me-1">Sửa</a>
+                        <form asp-action="Delete" asp-route-id="@item.maKhachHang" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng này?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

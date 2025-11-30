@@ -1,0 +1,32 @@
+@model HotelManagement.Models.DichVu
+
+<partial name="_ValidationSummary" />
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="TenDichVu" class="form-label">Tên dịch vụ</label>
+        <input asp-for="TenDichVu" class="form-control" />
+        <span asp-validation-for="TenDichVu" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="donGia" class="form-label">Đơn giá</label>
+        <div class="input-group">
+            <input asp-for="donGia" class="form-control" type="number" step="1000" min="0" />
+            <span class="input-group-text">đ</span>
+        </div>
+        <span asp-validation-for="donGia" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="donViTinh" class="form-label">Đơn vị tính</label>
+        <input asp-for="donViTinh" class="form-control" />
+        <span asp-validation-for="donViTinh" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ghiChu" class="form-label">Ghi chú</label>
+        <textarea asp-for="ghiChu" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="ghiChu" class="text-danger"></span>
+    </div>
+</div>
+
+<partial name="_FormActions" />
+

@@ -1,0 +1,61 @@
+@model HotelManagement.Models.KhachHang
+@{
+    ViewData["Title"] = "Chi tiết khách hàng";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="border rounded-3 p-3 bg-light">
+            <div class="text-muted">Mã khách hàng</div>
+            <div class="fw-semibold fs-5">@Model.maKhachHang</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Tên khách hàng</div>
+            <div class="fw-semibold fs-5">@Model.hoTen</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Số điện thoại</div>
+            <div class="fw-semibold">@Model.SoDienThoai</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Căn cước</div>
+            <p class="fw-semibold">@Model.cccd</p>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Ghi chú</div>
+            <div class="fw-semibold">@Model.ghiChu</div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Địa chỉ</div>
+            <p class="fw-semibold">@Model.DiaChi</p>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-circle me-1"></i> Quay lại
+    </a>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.maKhachHang" class="btn btn-primary">
+            <i class="bi bi-pencil-square me-1"></i> Sửa
+        </a>
+        <form asp-action="Delete" asp-route-id="@Model.maKhachHang" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng này?');">
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-1"></i> Xóa
+            </button>
+        </form>
+    </div>
+</div>

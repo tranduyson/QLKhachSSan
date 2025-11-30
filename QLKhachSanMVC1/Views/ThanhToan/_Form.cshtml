@@ -1,0 +1,106 @@
+@model HotelManagement.Models.ThanhToan
+
+<partial name="_ValidationSummary" />
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="maDatPhong" class="form-label">Đặt phòng</label>
+        <select asp-for="maDatPhong" asp-items="ViewBag.DatPhongList" class="form-select" id="maDatPhong">
+            <option value="">-- Chọn đơn đặt phòng --</option>
+        </select>
+        <span asp-validation-for="maDatPhong" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="SoTien" class="form-label">Số tiền</label>
+        <div class="input-group">
+            <input asp-for="SoTien" class="form-control" type="number" step="1000" min="0" id="SoTien" />
+            <span class="input-group-text">đ</span>
+        </div>
+        <span asp-validation-for="SoTien" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="NgayThanhToan" class="form-label">Ngày thanh toán</label>
+        <input asp-for="NgayThanhToan" class="form-control" type="date" />
+        <span asp-validation-for="NgayThanhToan" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="PhuongThuc" class="form-label">Phương thức</label>
+        <select asp-for="PhuongThuc" class="form-select">
+            <option value="TienMat">Tiền mặt</option>
+            <option value="ChuyenKhoan">Chuyển khoản</option>
+            <option value="The">Thẻ</option>
+        </select>
+        <span asp-validation-for="PhuongThuc" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="TrangThai" class="form-label">Trạng thái</label>
+        <select asp-for="TrangThai" asp-items="ViewBag.TrangThaiList" class="form-select" id="TrangThai"></select>
+        <span asp-validation-for="TrangThai" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="ghiChu" class="form-label">Ghi chú</label>
+        <textarea asp-for="ghiChu" class="form-control" rows="3" placeholder="Nhập ghi chú hóa đơn..."></textarea>
+        <span asp-validation-for="ghiChu" class="text-danger"></span>
+    </div>
+</div>
+
+<partial name="_FormActions" />
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const datPhongSelect = document.getElementById('maDatPhong');
+    const soTienInput = document.getElementById('SoTien');
+
+    if (datPhongSelect) {
+        datPhongSelect.addEventListener('change', async function () {
+            if (this.value) {
+                try {
+                    // Fetch thông tin đơn đặt phòng từ API để lấy chi tiết phòng và dịch vụ
+                    const response = await fetch(`/api/DatPhong/${this.value}`);
+                    if (response.ok) {
+                        const datPhong = await response.json();
+                        
+                        // Tính tổng tiền phòng
+                        let roomTotal = 0;
+                        if (datPhong.chiTietDatPhongs && Array.isArray(datPhong.chiTietDatPhongs)) {
+                            roomTotal = datPhong.chiTietDatPhongs.reduce((sum, detail) => {
+                                return sum + (detail.donGia * detail.soDem);
+                            }, 0);
+                        }
+                        
+                        // Tính tổng tiền dịch vụ
+                        let serviceTotal = 0;
+                        if (datPhong.suDungDichVus && Array.isArray(datPhong.suDungDichVus)) {
+                            serviceTotal = datPhong.suDungDichVus.reduce((sum, service) => {
+                                return sum + (service.donGia * service.soLuong);
+                            }, 0);
+                        }
+                        
+                        // Tính tổng = phòng + dịch vụ
+                        const totalAmount = roomTotal + serviceTotal;
+                        if (soTienInput) {
+                            soTienInput.value = totalAmount;
+                        }
+                    } else {
+                        throw new Error('API response not ok');
+                    }
+                } catch (error) {
+                    console.error('Error fetching booking details:', error);
+                    // Fallback: extract từ option text nếu API không thành công
+                    const selectedOption = this.options[this.selectedIndex];
+                    const text = selectedOption.text;
+                    const match = text.match(/Tổng tiền:\s*([\d,]+)đ/);
+                    if (match && soTienInput) {
+                        const soTien = parseInt(match[1].replace(/,/g, ''), 10);
+                        soTienInput.value = soTien;
+                    }
+                }
+            } else {
+                if (soTienInput) {
+                    soTienInput.value = '';
+                }
+            }
+        });
+    }
+});
+</script>

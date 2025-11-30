@@ -1,0 +1,47 @@
+@model IEnumerable<HotelManagement.Models.LoaiPhong>
+@{
+    ViewData["Title"] = "Danh sách loại phòng";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Danh sách loại phòng</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Thêm loại phòng
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Mã</th>
+                <th scope="col">Tên loại</th>
+                <th scope="col">Mô tả</th>
+                <th scope="col">Số giường</th>
+                <th scope="col">Diện tích (m²)</th>
+                <th scope="col">Giá mỗi đêm</th>
+                <th scope="col" class="text-end">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td class="fw-semibold">@item.TenLoaiPhong</td>
+                    <td class="text-muted">@item.MoTa</td>
+                    <td>@item.SoGiuong</td>
+                    <td>@item.DienTich.ToString("0.##")</td>
+                    <td>@item.GiaMoiDem.ToString("N0") đ</td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1">Chi tiết</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">Sửa</a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa loại phòng này?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

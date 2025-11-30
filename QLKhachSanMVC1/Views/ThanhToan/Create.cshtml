@@ -1,0 +1,10 @@
+@model HotelManagement.Models.ThanhToan
+@{
+    ViewData["Title"] = "Thêm thanh toán";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post" class="needs-validation" novalidate>
+    <partial name="_Form" />
+</form>

@@ -1,0 +1,104 @@
+@model IEnumerable<HotelManagement.Models.Phong>
+@{
+    ViewData["Title"] = "Danh sách phòng";
+    var loaiNames = ViewBag.LoaiPhongNames as System.Collections.Generic.Dictionary<int,string> ?? new System.Collections.Generic.Dictionary<int,string>();
+    var loaiPrices = ViewBag.LoaiPhongPrices as System.Collections.Generic.Dictionary<int,decimal> ?? new System.Collections.Generic.Dictionary<int,decimal>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Danh sách phòng</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Thêm phòng
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Mã phòng</th>
+                <th scope="col">Tên phòng</th>
+                <th scope="col">Mã loại phòng</th>
+                <th scope="col">Loại phòng</th>
+                <th scope="col">Tình trạng</th>
+                <th scope="col" class="text-end">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td class="fw-semibold">@item.SoPhong</td>
+                    <td>@item.maLoaiPhong</td>
+                    <td>
+                        <div>@(item.LoaiPhong?.TenLoaiPhong ?? (loaiNames.ContainsKey(item.maLoaiPhong) ? loaiNames[item.maLoaiPhong] : "-"))</div>
+                        <div class="text-muted small">@((item.LoaiPhong != null)
+                                                            ? item.LoaiPhong.GiaMoiDem.ToString("N0")
+                                                            : (loaiPrices.ContainsKey(item.maLoaiPhong) ? loaiPrices[item.maLoaiPhong].ToString("N0") : "-")) đ/đêm</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-@GetStatusColor(item.TinhTrang)">@GetStatusLabel(item.TinhTrang)</span>
+                    </td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1">Chi tiết</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">Sửa</a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa phòng này?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@functions {
+    private static string NormalizeStatus(string? s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return string.Empty;
+        var t = s.Trim().ToLowerInvariant();
+
+        // Remove diacritics
+        var normalized = t.Normalize(System.Text.NormalizationForm.FormD);
+        var sb = new System.Text.StringBuilder();
+        foreach (var ch in normalized)
+        {
+            var cat = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(ch);
+            if (cat != System.Globalization.UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(ch);
+            }
+        }
+        t = sb.ToString();
+
+        // Remove non-alphanumeric characters
+        t = System.Text.RegularExpressions.Regex.Replace(t, "[^a-z0-9]", "");
+        return t;
+    }
+
+    private static string GetStatusLabel(string? status)
+    {
+        var n = NormalizeStatus(status);
+        if (string.IsNullOrEmpty(n)) return "Trống";
+
+        if (n.Contains("dadat") || n.Contains("dat")) return "Đã đặt";
+        if (n.Contains("dangsudung") || n.Contains("dangsud") || n.Contains("sudung")) return "Đang sử dụng";
+        if (n.Contains("dangsua") || n.Contains("baotri") || n.Contains("baotri")) return "Đang sửa";
+
+        return "Trống";
+    }
+
+    private static string GetStatusColor(string? status)
+    {
+        var n = NormalizeStatus(status);
+        if (string.IsNullOrEmpty(n)) return "success"; // Trống
+
+        if (n.Contains("dadat") || n.Contains("dat")) return "info";
+        if (n.Contains("dangsudung") || n.Contains("sudung")) return "warning";
+        if (n.Contains("dangsua") || n.Contains("baotri")) return "secondary";
+
+        return "success";
+    }
+}

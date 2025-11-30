@@ -1,0 +1,31 @@
+@model HotelManagement.Models.NhanVien
+
+@{
+    ViewData["Title"] = "Chi tiết nhân viên";
+}
+
+<h2>Chi tiết nhân viên</h2>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Họ tên</dt>
+            <dd class="col-sm-9">@Model.HoTen</dd>
+
+            <dt class="col-sm-3">Tên đăng nhập</dt>
+            <dd class="col-sm-9">@Model.TenDangNhap</dd>
+
+            <dt class="col-sm-3">Chức vụ</dt>
+            <dd class="col-sm-9">@Model.ChucVu</dd>
+
+            <dt class="col-sm-3">Số điện thoại</dt>
+            <dd class="col-sm-9">@Model.SoDienThoai</dd>
+
+            <dt class="col-sm-3">Trạng thái</dt>
+            <dd class="col-sm-9">@(Model.TrangThai ==1 ? "Hoạt động" : "Không hoạt động")</dd>
+        </dl>
+
+        <a asp-action="Edit" asp-route-id="@Model.MaNhanVien" class="btn btn-warning">Sửa</a>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
+</div>

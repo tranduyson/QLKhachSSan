@@ -1,0 +1,18 @@
+@model HotelManagement.Models.NhanVien
+
+@{
+    ViewData["Title"] = "Tạo nhân viên";
+}
+
+<h2>Tạo nhân viên</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @Html.Partial("_Form", Model)
+
+    <div class="form-group mt-2">
+        <button type="submit" class="btn btn-primary">Tạo</button>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
+</form>
