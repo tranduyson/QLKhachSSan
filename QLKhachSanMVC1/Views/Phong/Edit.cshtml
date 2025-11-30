@@ -1,0 +1,10 @@
+@model HotelManagement.Models.Phong
+@{
+    ViewData["Title"] = "Cập nhật phòng";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="needs-validation" novalidate>
+    <partial name="_Form" />
+</form>

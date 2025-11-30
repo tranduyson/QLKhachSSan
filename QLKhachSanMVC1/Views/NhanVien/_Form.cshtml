@@ -1,0 +1,39 @@
+﻿@model HotelManagement.Models.NhanVien
+
+<div class="form-group">
+    <label asp-for="TenDangNhap" class="control-label">Tên đăng nhập</label>
+    <input asp-for="TenDangNhap" class="form-control" />
+    <span asp-validation-for="TenDangNhap" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="MatKhau" class="control-label">Mật khẩu</label>
+    <input asp-for="MatKhau" class="form-control" />
+    <span asp-validation-for="MatKhau" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="HoTen" class="control-label">Họ tên</label>
+    <input asp-for="HoTen" class="form-control" />
+    <span asp-validation-for="HoTen" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="ChucVu" class="control-label">Chức vụ</label>
+    <input asp-for="ChucVu" class="form-control" />
+    <span asp-validation-for="ChucVu" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="SoDienThoai" class="control-label">SDT</label>
+    <input asp-for="SoDienThoai" class="form-control" />
+    <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="TrangThai" class="control-label">Trạng thái</label>
+    <select asp-for="TrangThai" class="form-select">
+        <option value="1">Hoạt động</option>
+        <option value="0">Không hoạt động</option>
+    </select>
+</div>

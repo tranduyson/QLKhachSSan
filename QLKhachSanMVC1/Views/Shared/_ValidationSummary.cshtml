@@ -1,0 +1,16 @@
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <h6 class="mb-2">Có lỗi xảy ra:</h6>
+        <ul class="mb-0">
+            @foreach (var state in ViewData.ModelState.Values)
+            {
+                foreach (var error in state.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+

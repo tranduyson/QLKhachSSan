@@ -1,0 +1,53 @@
+@model IEnumerable<HotelManagement.Models.DatPhong>
+@{
+    ViewData["Title"] = "Danh sách đặt phòng";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Danh sách đặt phòng</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Đặt phòng mới
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Mã</th>
+                <th scope="col">Khách hàng</th>
+                <th scope="col">Nhân viên</th>
+                <th scope="col">Ngày nhận</th>
+                <th scope="col">Ngày trả</th>
+                <th scope="col">Tổng tiền</th>
+                <th scope="col">Trạng thái</th>
+                <th scope="col" class="text-end">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.maDatPhong</td>
+                    <td>@item.khachHang?.hoTen</td>
+                    <td>@item.nhanVien?.HoTen</td>
+                    <td>@item.ngayNhan.ToString("dd/MM/yyyy")</td>
+                    <td>@item.ngayTra.ToString("dd/MM/yyyy")</td>
+                    <td>@item.tongTien.ToString("N0") đ</td>
+                    <td>
+                        <span class="badge bg-secondary">@item.trangThai</span>
+                    </td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@item.maDatPhong" class="btn btn-sm btn-outline-info">Chi tiết</a>
+                        <a asp-action="Edit" asp-route-id="@item.maDatPhong" class="btn btn-sm btn-warning ms-1">Sửa</a>
+                                                <form asp-action="Delete" asp-route-id="@item.maDatPhong" method="post" class="d-inline"
+                                                            onsubmit="return confirm('Bạn có chắc chắn muốn xóa đặt phòng này?')">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-sm btn-danger ms-1">Xóa</button>
+                                                </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

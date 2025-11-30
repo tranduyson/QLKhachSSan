@@ -1,0 +1,141 @@
+@model HotelManagement.Models.DatPhong
+@{
+    ViewData["Title"] = "Chi tiết đặt phòng";
+
+    // Tính tổng tiền từ các bảng chi tiết
+    var tongTienPhong = Model.chiTietDatPhongs?.Sum(ct => ct.ThanhTien) ?? 0;
+    var tongTienDichVu = Model.suDungDichVus?.Sum(dv => dv.ThanhTien) ?? 0;
+    var tongTienThucTe = tongTienPhong + tongTienDichVu;
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="border rounded-3 p-3 bg-light">
+            <div class="text-muted">Mã đặt phòng</div>
+            <div class="fw-semibold fs-5">@Model.maDatPhong</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Khách hàng</div>
+            <div class="fw-semibold">@Model.khachHang?.hoTen</div>
+            <div class="text-muted small">@Model.khachHang?.SoDienThoai</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Nhân viên</div>
+            <div class="fw-semibold">@Model.nhanVien?.HoTen</div>
+            <div class="text-muted small">@Model.nhanVien?.Email</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Ngày đặt</div>
+            <div class="fw-semibold">@Model.ngayDat.ToString("dd/MM/yyyy")</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Ngày nhận</div>
+            <div class="fw-semibold">@Model.ngayNhan.ToString("dd/MM/yyyy")</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Ngày trả</div>
+            <div class="fw-semibold">@Model.ngayTra.ToString("dd/MM/yyyy")</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded-3 p-3">
+            <div class="text-muted">Trạng thái</div>
+            <span class="badge bg-primary">@Model.trangThai</span>
+        </div>
+    </div>
+</div>
+
+<h5 class="mb-3">Chi tiết phòng</h5>
+<div class="table-responsive mb-4">
+    <table class="table table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Phòng</th>
+                <th>Loại phòng</th>
+                <th>Đơn giá</th>
+                <th>Số đêm</th>
+                <th class="text-end">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.chiTietDatPhongs ?? Enumerable.Empty<HotelManagement.Models.ChiTietDatPhong>())
+            {
+                <tr>
+                    <td>@item.SoPhong</td>
+                    <td>@item.TenLoaiPhong</td>
+                    <td>@item.DonGia.ToString("N0") đ</td>
+                    <td>@item.SoDem</td>
+                    <td class="fw-semibold text-end">@item.ThanhTien.ToString("N0") đ</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot class="table-light">
+            <tr>
+                <td colspan="4" class="text-end fw-semibold">Tổng tiền phòng:</td>
+                <td class="fw-semibold text-end text-primary">@tongTienPhong.ToString("N0") đ</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<h5 class="mb-3">Dịch vụ sử dụng</h5>
+<div class="table-responsive mb-4">
+    <table class="table table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Dịch vụ</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th class="text-end">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.suDungDichVus ?? Enumerable.Empty<HotelManagement.Models.SuDungDichVu>())
+            {
+                <tr>
+                    <td>@item.TenDichVu</td>
+                    <td>@item.SoLuong</td>
+                    <td>@item.DonGia.ToString("N0") đ</td>
+                    <td class="fw-semibold text-end">@item.ThanhTien.ToString("N0") đ</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot class="table-light">
+            <tr>
+                <td colspan="3" class="text-end fw-semibold">Tổng tiền dịch vụ:</td>
+                <td class="fw-semibold text-end text-primary">@tongTienDichVu.ToString("N0") đ</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<div class="alert alert-success d-flex justify-content-between align-items-center mb-4">
+    <span class="fw-bold fs-5">TỔNG CỘNG</span>
+    <span class="fw-bold fs-4">@tongTienThucTe.ToString("N0") đ</span>
+</div>
+
+<div class="d-flex justify-content-between">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-circle me-1"></i> Quay lại
+    </a>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.maDatPhong" class="btn btn-warning">
+            <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
+        </a>
+        <a asp-controller="ThanhToan" asp-action="Create" asp-route-maDatPhong="@Model.maDatPhong" class="btn btn-success">
+            <i class="bi bi-credit-card-2-front me-1"></i> Tạo phiếu thanh toán
+        </a>
+    </div>
+</div>
