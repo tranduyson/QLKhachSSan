@@ -34,8 +34,26 @@ namespace QLKhachSanApi.Controllers
         }
 
         [HttpGet("available")]
-        public async Task<IActionResult> GetAvailableRooms([FromQuery] DateTime checkIn, [FromQuery] DateTime checkOut)
+        public async Task<IActionResult> GetAvailableRooms([FromQuery(Name = "checkIn")] string checkInStr, [FromQuery(Name = "checkOut")] string checkOutStr)
         {
+            // Validate parameters
+            if (string.IsNullOrWhiteSpace(checkInStr) || string.IsNullOrWhiteSpace(checkOutStr))
+                return BadRequest(new { error = "checkIn and checkOut parameters are required" });
+
+            // Parse ngày từ string với multiple formats
+            var formats = new[] { "yyyy-MM-dd", "dd/MM/yyyy", "MM/dd/yyyy", "dd-MM-yyyy", "yyyy/MM/dd" };
+            
+            if (!DateTime.TryParseExact(checkInStr, formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var checkIn) &&
+                !DateTime.TryParse(checkInStr, out checkIn))
+                return BadRequest(new { error = $"checkIn '{checkInStr}' is not valid. Accepted formats: yyyy-MM-dd, dd/MM/yyyy, or ISO 8601" });
+
+            if (!DateTime.TryParseExact(checkOutStr, formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var checkOut) &&
+                !DateTime.TryParse(checkOutStr, out checkOut))
+                return BadRequest(new { error = $"checkOut '{checkOutStr}' is not valid. Accepted formats: yyyy-MM-dd, dd/MM/yyyy, or ISO 8601" });
+
+            if (checkIn > checkOut)
+                return BadRequest(new { error = "checkIn must be before or equal to checkOut" });
+
             var availableRooms = await _repository.GetAvailableRoomsAsync(checkIn, checkOut);
             return Ok(availableRooms);
         }

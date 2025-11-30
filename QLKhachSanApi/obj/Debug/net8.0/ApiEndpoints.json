@@ -81,7 +81,7 @@
   {
     "ContainingType": "QLKhachSanApi.Controllers.DatPhongController",
     "Method": "CheckIn",
-    "RelativePath": "api/DatPhong/{id}/checkin",
+    "RelativePath": "api/DatPhong/{id}/check-in",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -97,7 +97,7 @@
   {
     "ContainingType": "QLKhachSanApi.Controllers.DatPhongController",
     "Method": "CheckOut",
-    "RelativePath": "api/DatPhong/{id}/checkout",
+    "RelativePath": "api/DatPhong/{id}/check-out",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -531,12 +531,12 @@
     "Parameters": [
       {
         "Name": "checkIn",
-        "Type": "System.DateTime",
+        "Type": "System.String",
         "IsRequired": false
       },
       {
         "Name": "checkOut",
-        "Type": "System.DateTime",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],

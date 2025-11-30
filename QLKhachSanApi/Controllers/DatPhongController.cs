@@ -182,20 +182,34 @@ namespace QLKhachSanApi.Controllers
             }
         }
 
-        [HttpPut("{id}/checkin")]
+        [HttpPut("{id}/check-in")]
         public async Task<IActionResult> CheckIn(int id)
         {
             var datPhong = await _repository.GetByIdAsync(id);
             if (datPhong == null)
-                return NotFound();
+                return NotFound(new { message = $"Booking with ID {id} not found" });
+
+            if (datPhong.TrangThai == "Đã nhận")
+                return BadRequest(new { message = "Booking has already been checked in" });
+
+            if (datPhong.TrangThai == "Đã trả")
+                return BadRequest(new { message = "Cannot check in a booking that has already been checked out" });
 
             datPhong.TrangThai = "Đã nhận";
+            datPhong.NgayNhan = DateTime.Now;
             await _repository.UpdateAsync(datPhong);
 
-            return Ok(datPhong);
+            // Load related data for response
+            datPhong.ChiTietDatPhongs = (await _chiTietRepository.GetByDatPhongAsync(datPhong.MaDatPhong)).ToList();
+            datPhong.SuDungDichVus = (await _suDungDichVuRepository.GetByDatPhongAsync(datPhong.MaDatPhong)).ToList();
+            datPhong.ThanhToans = (await _thanhToanRepository.GetByDatPhongAsync(datPhong.MaDatPhong)).ToList();
+            datPhong.KhachHang = await _khachHangRepository.GetByIdAsync(datPhong.MaKhachHang);
+            datPhong.NhanVien = datPhong.MaNhanVien.HasValue ? await _nhanVienRepository.GetByIdAsync(datPhong.MaNhanVien.Value) : null;
+
+            return Ok(new { message = "Check-in successful", data = datPhong });
         }
 
-        [HttpPut("{id}/checkout")]
+        [HttpPut("{id}/check-out")]
         public async Task<IActionResult> CheckOut(int id)
         {
             using var conn = _dbHelper.GetConnection();
@@ -206,9 +220,16 @@ namespace QLKhachSanApi.Controllers
             {
                 var datPhong = await _repository.GetByIdAsync(id);
                 if (datPhong == null)
-                    return NotFound();
+                    return NotFound(new { message = $"Booking with ID {id} not found" });
+
+                if (datPhong.TrangThai == "Đã trả")
+                    return BadRequest(new { message = "Booking has already been checked out" });
+
+                if (datPhong.TrangThai == "Hủy")
+                    return BadRequest(new { message = "Cannot check out a cancelled booking" });
 
                 datPhong.TrangThai = "Đã trả";
+                datPhong.NgayTra = DateTime.Now;
 
                 await _repository.UpdateAsync(datPhong, conn, tx);
 
@@ -224,12 +245,20 @@ namespace QLKhachSanApi.Controllers
                 }
 
                 tx.Commit();
-                return Ok(datPhong);
+
+                // Load related data for response
+                datPhong.ChiTietDatPhongs = (await _chiTietRepository.GetByDatPhongAsync(datPhong.MaDatPhong)).ToList();
+                datPhong.SuDungDichVus = (await _suDungDichVuRepository.GetByDatPhongAsync(datPhong.MaDatPhong)).ToList();
+                datPhong.ThanhToans = (await _thanhToanRepository.GetByDatPhongAsync(datPhong.MaDatPhong)).ToList();
+                datPhong.KhachHang = await _khachHangRepository.GetByIdAsync(datPhong.MaKhachHang);
+                datPhong.NhanVien = datPhong.MaNhanVien.HasValue ? await _nhanVienRepository.GetByIdAsync(datPhong.MaNhanVien.Value) : null;
+
+                return Ok(new { message = "Check-out successful", data = datPhong });
             }
-            catch
+            catch (Exception ex)
             {
                 tx.Rollback();
-                throw;
+                return StatusCode(500, new { message = "An error occurred during check-out", error = ex.Message });
             }
             finally
             {

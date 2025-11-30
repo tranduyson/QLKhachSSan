@@ -130,7 +130,7 @@
         }
       }
     },
-    "/api/DatPhong/{id}/checkin": {
+    "/api/DatPhong/{id}/check-in": {
       "put": {
         "tags": [
           "DatPhong"
@@ -153,7 +153,7 @@
         }
       }
     },
-    "/api/DatPhong/{id}/checkout": {
+    "/api/DatPhong/{id}/check-out": {
       "put": {
         "tags": [
           "DatPhong"
@@ -842,16 +842,14 @@
             "name": "checkIn",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           },
           {
             "name": "checkOut",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           }
         ],
