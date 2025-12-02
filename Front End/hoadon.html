@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hóa Đơn - Hotel Management</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <span>🏨</span>
+            <div>
+                <h1>HOTEL</h1>
+                <div class="logo-subtitle">Quản Lý Khách Sạn</div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <a href="management.html" class="menu-item">
+                <span>🏠</span>
+                <span>Trang chủ</span>
+            </a>
+            <a href="Phong.html" class="menu-item">
+                <span>🚪</span>
+                <span>Quản Lý Phòng</span>
+            </a>
+            <a href="Gia.html" class="menu-item ">
+                <span>💰</span>
+                <span>Quản Lý Giá</span>
+            </a>
+            <a href="LoaiPhong.html" class="menu-item">
+                <span>🏷️</span>
+                <span>Loại Phòng</span>
+            </a>
+            <a href="booking.html" class="menu-item ">
+                <span>📅</span>
+                <span>Đặt phòng</span>
+            </a>
+            <a href="thanhtoan.html" class="menu-item">
+                <span>💳</span>
+                <span>Thanh toán</span>
+            </a>
+            <a href="checkinout.html" class="menu-item ">
+                <span>✅</span>
+                <span>Check In/Out</span>
+            </a>
+            <a href="dichvu.html" class="menu-item ">
+                <span>🛎️</span>
+                <span>Dịch Vụ</span>
+            </a>
+            <a href="hoadon.html" class="menu-item active">
+                <span>💰</span>
+                <span>Hóa Đơn</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <span>👥</span>
+                <span>Quản lý người dùng</span>
+            </a>
+            <a href="baocao.html" class="menu-item " >
+                <span>📊</span>
+                <span>Báo Cáo</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h2 id="pageTitle">Hóa Đơn</h2>
+            
+            <div class="user-dropdown">
+                <div class="user-info" id="userInfoTrigger">
+                    <span id="userNameDisplay" class="user-name">Admin</span>
+                    <div class="user-avatar" id="userAvatar">A</div>
+                </div>
+                <div class="dropdown-menu" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="user-avatar-large" id="dropdownAvatar">A</div>
+                        <div>
+                            <div class="dropdown-user-name" id="dropdownUserName">Admin</div>
+                            <div class="dropdown-user-role" id="dropdownUserRole">Quản trị viên</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="profile.html" class="dropdown-item"><span>👤</span> Hồ sơ cá nhân</a>
+                    <a href="#" class="dropdown-item text-danger" onclick="logout()"><span>🚪</span> Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalInvoices">0</div>
+                <div class="stat-label">Tổng hóa đơn</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalRevenue">0đ</div>
+                <div class="stat-label">Tổng doanh thu</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="paidInvoices">0</div>
+                <div class="stat-label">Đã thanh toán</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="unpaidInvoices">0</div>
+                <div class="stat-label">Chưa thanh toán</div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>Trạng thái</label>
+                    <select id="statusFilter">
+                        <option value="">Tất cả</option>
+                        <option value="paid">Đã thanh toán</option>
+                        <option value="unpaid">Chưa thanh toán</option>
+                        <option value="partial">Thanh toán 1 phần</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Tìm kiếm</label>
+                    <input type="text" id="searchInput" placeholder="Số HĐ, mã khách...">
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn btn-primary" onclick="filterInvoices()">🔍 Lọc</button>
+                </div>
+            </div>
+
+            <div id="invoicesList"></div>
+        </div>
+    </div>
+
+    <!-- Invoice Detail Modal -->
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chi Tiết Hóa Đơn</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="invoiceDetail"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="window.print()">🖨️ In hóa đơn</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/Auth.js"></script>
+     <script src="js/Auth.js"></script>
+    <script src="js/hoadon.js"></script>
+</body>
+</html>
