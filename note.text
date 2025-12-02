@@ -1,0 +1,137 @@
+# Chức năng chi tiết cho từng dự án - Hệ thống Quản lý Khách sạn.
+
+## 🔧 **HotelManagement.API.Common** (Chức năng dùng chung)
+
+### Xác thực và bảo mật
+- [ ] **Đăng nhập hệ thống** _(Kiểm tra tên đăng nhập/mật khẩu, tạo token, ghi log thời gian)_
+- [ ] **Đăng xuất** _(Hủy token, xóa session, ghi thời điểm đăng xuất)_
+- [ ] **Đổi mật khẩu** _(Verify mật khẩu cũ, validate mật khẩu mới, mã hóa và lưu)_
+- [ ] **Quên mật khẩu** _(Gửi email reset, tạo token tạm thời, cho phép đặt mật khẩu mới)_
+
+### Quản lý tệp tin
+- [ ] **Tải tệp lên** _(Upload hình ảnh, giấy tờ, kiểm tra định dạng/kích thước, lưu đường dẫn)_
+- [ ] **Xóa tệp** _(Xóa file khỏi server, cập nhật database, kiểm tra quyền truy cập)_
+- [ ] **Xem tệp** _(Hiển thị hình ảnh, tải file, kiểm tra quyền xem)_
+- [ ] **Cập nhật tệp** _(Thay thế file cũ, backup file gốc, update đường dẫn mới)_
+
+
+---
+
+## 👤 **HotelManagement.API.Customer** (Quản lý khách hàng)
+
+### Quản lý thông tin khách
+- [ ] **Thêm khách hàng** _(Nhập họ tên, CMND/passport, SĐT, email, địa chỉ, validate dữ liệu)_
+- [ ] **Sửa thông tin khách** _(Cập nhật thông tin cá nhân, kiểm tra trùng CMND, lưu lịch sử thay đổi)_
+- [ ] **Xóa khách hàng** _(Soft delete, kiểm tra có booking active không, lưu lý do xóa)_
+- [ ] **Xem danh sách khách** _(Hiển thị phân trang, tìm kiếm theo tên/SĐT/CMND, sort theo tên/ngày tạo)_
+- [ ] **Xem chi tiết khách** _(Thông tin cá nhân, lịch sử booking, điểm tích lũy, ghi chú)_
+
+### Quản lý loại khách hàng
+- [ ] **Thêm loại khách** _(VIP, Thường, Doanh nghiệp - set ưu đãi, discount %)_
+- [ ] **Sửa loại khách** _(Cập nhật tên, mức ưu đãi, điều kiện áp dụng)_
+- [ ] **Xóa loại khách** _(Kiểm tra còn khách nào thuộc loại này không)_
+- [ ] **Xem loại khách** _(Danh sách các loại, số khách hàng thuộc mỗi loại)_
+
+### Quản lý điểm tích lũy
+- [ ] **Thêm điểm** _(Cộng điểm khi thanh toán, theo quy tắc 1000đ = 1 điểm)_
+- [ ] **Trừ điểm** _(Khi khách đổi quà, discount, ghi lý do sử dụng)_
+- [ ] **Xem lịch sử điểm** _(Cộng/trừ theo thời gian, số dư hiện tại, hạn sử dụng)_
+- [ ] **Xóa giao dịch điểm** _(Chỉ admin, trường hợp nhập nhầm, backup trước khi xóa)_
+
+---
+
+## 🏨 **HotelManagement.API.Admin** (Quản lý hệ thống)
+
+### Quản lý người dùng
+- [ ] **Thêm người dùng** _(Username, password, email, role, thông tin cá nhân, ngày bắt đầu)_
+- [ ] **Sửa thông tin người dùng** _(Cập nhật thông tin, đổi role, kích hoạt/khóa tài khoản)_
+- [ ] **Xóa người dùng** _(Soft delete, transfer công việc cho người khác, backup dữ liệu)_
+- [ ] **Xem danh sách người dùng** _(Phân trang, filter theo role/status, sort theo tên/ngày tạo)_
+- [ ] **Reset mật khẩu** _(Tạo mật khẩu tạm thời, yêu cầu đổi khi đăng nhập lần đầu)_
+
+### Quản lý vai trò và quyền
+- [ ] **Thêm vai trò mới** _(Tên role, mô tả, danh sách permissions được phép)_
+- [ ] **Sửa quyền vai trò** _(Cập nhật permissions, thêm/bớt quyền truy cập chức năng)_
+- [ ] **Xóa vai trò** _(Kiểm tra còn user nào dùng role này không)_
+- [ ] **Xem chi tiết quyền** _(Hiển thị matrix role-permission, ai có quyền gì)_
+
+### Quản lý danh mục hệ thống
+- [ ] **Thêm loại phòng** _(Tên loại, mô tả, giá cơ bản, số người tối đa, tiện nghi)_
+- [ ] **Sửa loại phòng** _(Cập nhật thông tin, giá, ảnh mô tả)_
+- [ ] **Xóa loại phòng** _(Kiểm tra còn phòng nào thuộc loại này không)_
+- [ ] **Thêm dịch vụ** _(Tên dịch vụ, giá, đơn vị tính, mô tả)_
+- [ ] **Sửa dịch vụ** _(Cập nhật giá, thông tin, trạng thái active/inactive)_
+- [ ] **Xóa dịch vụ** _(Soft delete, kiểm tra có booking nào đang sử dụng)_
+
+---
+
+## 🏠 **HotelManagement.API.Room** (Quản lý phòng)
+
+### Quản lý phòng
+- [ ] **Thêm phòng mới** _(Số phòng, tầng, loại phòng, trạng thái, mô tả, hình ảnh)_
+- [ ] **Sửa thông tin phòng** _(Cập nhật số phòng, loại, trạng thái, mô tả, tiện nghi)_
+- [ ] **Xóa phòng** _(Soft delete, kiểm tra có booking active không, lý do xóa)_
+- [ ] **Xem danh sách phòng** _(Grid view với filter theo tầng/loại/trạng thái, sort theo số phòng)_
+- [ ] **Xem chi tiết phòng** _(Thông tin đầy đủ, hình ảnh, lịch sử booking, maintenance)_
+
+### Quản lý trạng thái phòng
+- [ ] **Cập nhật trạng thái** _(Available/Occupied/Cleaning/Maintenance/Out of Order)_
+- [ ] **Xem lịch trạng thái** _(Timeline thay đổi trạng thái theo ngày, người thực hiện)_
+- [ ] **Đặt lịch bảo trì** _(Chọn phòng, ngày bắt đầu/kết thúc, loại công việc, người phụ trách)_
+- [ ] **Hủy lịch bảo trì** _(Cancel scheduled maintenance, cập nhật trạng thái phòng)_
+
+### Quản lý giá phòng
+- [ ] **Thêm bảng giá** _(Loại phòng, giá theo ngày trong tuần, mùa, sự kiện đặc biệt)_
+- [ ] **Sửa giá phòng** _(Cập nhật giá theo thời gian, áp dụng từ ngày nào)_
+- [ ] **Xóa bảng giá** _(Remove giá cũ, backup trước khi xóa)_
+- [ ] **Xem lịch giá** _(Calendar view giá theo ngày, so sánh giá các loại phòng)_
+- [ ] **Copy giá** _(Sao chép bảng giá từ năm trước, điều chỉnh theo tỷ lệ lạm phát)_
+
+---
+
+
+
+## 🛎️ **HotelManagement.API.Reception** (Lễ tân)
+
+### Quản lý booking
+- [ ] **Thêm booking mới** _(Thông tin khách, ngày ở, loại phòng, số người, yêu cầu đặc biệt)_
+- [ ] **Sửa booking** _(Thay đổi ngày, phòng, số khách, tính chênh lệch giá, ghi chú thay đổi)_
+- [ ] **Hủy booking** _(Cancel reservation, tính phí hủy theo policy, hoàn tiền nếu có)_
+- [ ] **Xem danh sách booking** _(Filter theo ngày/trạng thái/khách, sort theo check-in date)_
+- [ ] **Xem chi tiết booking** _(Thông tin đầy đủ, history thay đổi, payment status)_
+
+### Quản lý check-in/out
+- [ ] **Check-in khách** _(Xác nhận booking, assign phòng cụ thể, tạo folio, active key card)_
+- [ ] **Check-out khách** _(Review charges, thanh toán, deactive key, update room status)_
+- [ ] **Chuyển phòng** _(Move guest sang phòng khác, cập nhật charges, reason)_
+- [ ] **Xem lịch check-in/out** _(Calendar view, arrival/departure list theo ngày)_
+
+### Quản lý dịch vụ phụ
+- [ ] **Thêm dịch vụ vào bill** _(Minibar, laundry, massage, tour, quantity và giá)_
+- [ ] **Sửa charges** _(Điều chỉnh quantity, giá, discount, ghi lý do thay đổi)_
+- [ ] **Xóa charges** _(Remove service charges, chỉ trước check-out, manager approval)_
+- [ ] **Xem guest folio** _(Bill chi tiết, room charges, extras, tax, balance)_
+
+---
+
+## 💰 **HotelManagement.API.Accounting** (Kế toán)
+
+### Quản lý hóa đơn
+- [ ] **Tạo hóa đơn** _(Generate từ guest folio, áp dụng tax, assign số hóa đơn)_
+- [ ] **Sửa hóa đơn** _(Chỉ trước khi finalize, cập nhật thông tin khách/công ty)_
+- [ ] **Hủy hóa đơn** _(Cancel invoice, tạo credit note, ghi lý do hủy)_
+- [ ] **Xem danh sách hóa đơn** _(Filter theo ngày/khách/trạng thái, search theo số HĐ)_
+- [ ] **In hóa đơn** _(Export PDF, template có logo, thông tin thuế đầy đủ)_
+
+### Quản lý thanh toán
+- [ ] **Thêm khoản thu** _(Tiền mặt, thẻ, chuyển khoản, link với booking/invoice)_
+- [ ] **Sửa thông tin thanh toán** _(Điều chỉnh số tiền, method, reference number)_
+- [ ] **Xóa giao dịch** _(Chỉ manager, backup trước khi xóa, audit log)_
+- [ ] **Xem lịch sử thanh toán** _(Payment history, outstanding balance, aging report)_
+
+### Quản lý báo cáo
+- [ ] **Tạo báo cáo doanh thu** _(Theo ngày/tháng/quý, breakdown theo loại phòng/payment method)_
+- [ ] **Xuất báo cáo Excel** _(Export data với format chuẩn, charts và pivot tables)_
+- [ ] **Lưu template báo cáo** _(Save custom report format, schedule auto generate)_
+- [ ] **Xem báo cáo lịch sử** _(Archive các báo cáo đã tạo, search theo thời gian)_
+

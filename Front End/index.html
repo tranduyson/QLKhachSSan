@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - Quản Lý Khách Sạn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .left-side {
+            flex: 1;
+            background: url('1.webp') center/cover;
+            position: relative;
+        }
+
+        .left-side::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .right-side {
+            width: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            padding: 40px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 13px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-login:hover {
+            background: #45a049;
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .btn-login:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #4CAF50;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+
+        .remember-forgot label {
+            display: flex;
+            align-items: center;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .remember-forgot input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .remember-forgot a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .remember-forgot a:hover {
+            text-decoration: underline;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .register-link a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-side {
+                display: none;
+            }
+            
+            .right-side {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-side"></div>
+        <div class="right-side">
+            <div class="login-box">
+                <div class="logo">
+                    <h1>HOTEL</h1>
+                    <p>Hệ Thống Quản Lý Khách Sạn</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Tên đăng nhập</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Mật khẩu</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <div class="remember-forgot">
+                        <label>
+                            <input type="checkbox" name="remember">
+                            Ghi nhớ đăng nhập
+                        </label>
+                        <a href="#">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="loginBtn">Đăng Nhập</button>
+                    
+                    <div class="error-message" id="errorMessage"></div>
+                    <div class="success-message" id="successMessage"></div>
+                </form>
+
+                <div class="register-link">
+                    Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL Gateway - Login nằm trong API Admin
+        const API_URL = 'https://localhost:7105/api-admin/Login';
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+            
+            if (!username || !password) {
+                showError('Vui lòng nhập đầy đủ thông tin!');
+                return;
+            }
+
+            // Disable button khi đang xử lý
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Đang xử lý...';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        TenDangNhap: username,
+                        MatKhau: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Lưu token vào localStorage
+                    localStorage.setItem('token', data.token);
+                    
+                    // Giải mã token để lấy vai trò
+                    try {
+                        const tokenPayload = JSON.parse(atob(data.token.split('.')[1]));
+                        const role = tokenPayload.role || tokenPayload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                        
+                        showSuccess('Đăng nhập thành công! Đang chuyển hướng...');
+                        
+                        setTimeout(() => {
+                            window.location.href = 'management.html';
+                        }, 1000);
+                    } catch (parseError) {
+                        console.error('Token parse error:', parseError);
+                        showSuccess('Đăng nhập thành công! Đang chuyển hướng...');
+                        setTimeout(() => {
+                            window.location.href = 'management.html';
+                        }, 1000);
+                    }
+                } else {
+                    showError(data.message || 'Đăng nhập thất bại!');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Đăng Nhập';
+                }
+            } catch (error) {
+                console.error('Lỗi:', error);
+                showError('Không thể kết nối đến máy chủ!');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Đăng Nhập';
+            }
+        });
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.classList.add('show');
+        }
+
+        // Kiểm tra nếu đã đăng nhập
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                showSuccess('Bạn đã đăng nhập!');
+                document.getElementById('loginBtn').textContent = 'Tiếp tục';
+            }
+        });
+    </script>
+    <script src="js/Auth.js"></script>
+</body>
+</html>

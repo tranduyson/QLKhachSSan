@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dịch Vụ - Hotel Management</title>
+    <!-- Replaced inline styles with common.css -->
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <span>🏨</span>
+            <div>
+                <h1>HOTEL</h1>
+                <div class="logo-subtitle">Quản Lý Khách Sạn</div>
+            </div>
+        </div>
+        <div class="menu">
+            
+            <a href="management.html" class="menu-item">
+                <span>🏠</span>
+                <span>Trang chủ</span>
+            </a>
+            <a href="Phong.html" class="menu-item">
+                <span>🚪</span>
+                <span>Quản Lý Phòng</span>
+            </a>
+            <a href="Gia.html" class="menu-item">
+                <span>💰</span>
+                <span>Quản Lý Giá</span>
+            </a>
+            <a href="LoaiPhong.html" class="menu-item">
+                <span>🏷️</span>
+                <span>Loại Phòng</span>
+            </a>
+            <a href="booking.html" class="menu-item ">
+                <span>📅</span>
+                <span>Đặt phòng</span>
+            </a>
+            <a href="thanhtoan.html" class="menu-item">
+                <span>💳</span>
+                <span>Thanh toán</span>
+            </a>
+            <a href="checkinout.html" class="menu-item ">
+                <span>✅</span>
+                <span>Check In/Out</span>
+            </a>
+            <a href="dichvu.html" class="menu-item active">
+                <span>🛎️</span>
+                <span>Dịch Vụ</span>
+            </a>
+            <a href="hoadon.html" class="menu-item">
+                <span>💰</span>
+                <span>Hóa Đơn</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <span>👥</span>
+                <span>Quản lý người dùng</span>
+            </a>
+            <a href="baocao.html" class="menu-item " >
+                <span>📊</span>
+                <span>Báo Cáo</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h2 id="pageTitle">Trang Chủ</h2>
+            <div class="user-dropdown">
+                <div class="user-info" id="userInfoTrigger">
+                    <span id="userNameDisplay" class="user-name">Admin</span>
+                    <div class="user-avatar" id="userAvatar">A</div>
+                </div>
+                <div class="dropdown-menu" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="user-avatar-large" id="dropdownAvatar">A</div>
+                        <div>
+                            <div class="dropdown-user-name" id="dropdownUserName">Admin</div>
+                            <div class="dropdown-user-role" id="dropdownUserRole">Quản trị viên</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="profile.html" class="dropdown-item"><span>👤</span> Hồ sơ cá nhân</a>
+                    <a href="#" class="dropdown-item text-danger" onclick="logout()"><span>🚪</span> Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('list')">Danh Sách Dịch Vụ</button>
+            <button class="tab-btn" onclick="switchTab('usage')">Sử Dụng Dịch Vụ</button>
+        </div>
+
+        <!-- Tab: Danh sách dịch vụ -->
+        <div class="content-card" id="listTab">
+            <div class="action-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Danh sách dịch vụ</h3>
+                <button class="btn btn-primary" onclick="openAddModal()">Thêm Dịch Vụ</button>
+            </div>
+            <div class="service-grid" id="serviceGrid">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <p>Đang tải danh sách dịch vụ...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Sử dụng dịch vụ -->
+        <div class="content-card" id="usageTab" style="display: none;">
+            <h3>Ghi nhận sử dụng dịch vụ</h3>
+            
+            <div id="alertContainer"></div>
+
+            <div class="booking-select" style="margin-bottom: 20px;">
+                <label style="font-weight: bold; display: block; margin-bottom: 8px;">Chọn đặt phòng:</label>
+                <select id="bookingSelect" onchange="loadBookingServices()" class="form-group" style="width: 100%; padding: 12px;">
+                    <option value="">-- Chọn booking --</option>
+                </select>
+            </div>
+
+            <div id="selectedBookingInfo" class="info-box" style="display: none;"></div>
+            
+            <div id="serviceUsageList"></div>
+            
+            <div id="summarySection" style="display: none;"></div>
+
+            <button class="btn btn-primary" onclick="openAddServiceModal()" id="addServiceBtn" style="display: none; margin-top: 15px;">
+                ➕ Thêm Dịch Vụ
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal: Thêm/Sửa Dịch Vụ -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Thêm Dịch Vụ</h2>
+                <button class="close-btn" onclick="closeModal('serviceModal')">×</button>
+            </div>
+            <form id="serviceForm" onsubmit="saveService(event)">
+                <input type="hidden" id="serviceId">
+                <div class="form-group">
+                    <label>Mã dịch vụ (VD: SPA) *</label>
+                    <input type="text" id="serviceMa" placeholder="VD: TOUR-BEACH" required>
+                </div>
+                <div class="form-group">
+                    <label>Tên dịch vụ *</label>
+                    <input type="text" id="serviceTen" placeholder="VD: Tour biển cả ngày" required>
+                </div>
+                <div class="form-group">
+                    <label>Đơn giá (VNĐ) *</label>
+                    <input type="number" id="serviceDonGia" min="0" placeholder="1200000" required>
+                </div>
+                <div class="form-group">
+                    <label>Thuế (%) *</label>
+                    <input type="number" id="serviceThue" min="0" max="100" value="10" required>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Lưu Dịch Vụ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Thêm Dịch Vụ Cho Booking -->
+    <div id="addServiceUsageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Thêm Dịch Vụ Cho Khách</h2>
+                <button class="close-btn" onclick="closeModal('addServiceUsageModal')">×</button>
+            </div>
+            <form id="serviceUsageForm" onsubmit="addServiceToBooking(event)">
+                <div class="form-group">
+                    <label>Chọn dịch vụ *</label>
+                    <select id="usageServiceId" required onchange="updateServicePreview()">
+                        <option value="">-- Chọn dịch vụ --</option>
+                    </select>
+                </div>
+                <div id="servicePreview" class="info-box" style="display: none;"></div>
+                <div class="form-group">
+                    <label>Số lượng *</label>
+                    <input type="number" id="usageQuantity" min="1" value="1" required onchange="updateServicePreview()">
+                </div>
+                <div class="form-group">
+                    <label>Ghi chú (tùy chọn)</label>
+                    <input type="text" id="usageNote" placeholder="VD: Không đá">
+                </div>
+                <button type="submit" class="btn btn-success" id="submitServiceBtn" style="width: 100%;">Xác Nhận Thêm</button>
+            </form>
+        </div>
+    </div>
+    <script src="js/Auth.js"></script>
+     <script src="js/Auth.js"></script>
+    <script src="js/dichvu.js"></script>
+</body>
+</html>

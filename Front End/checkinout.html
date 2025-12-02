@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check In/Out - Hotel Management</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #2d5016;
+            color: white;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #2d5016;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-checkin {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .status-staying {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .status-checkout {
+            background: #28a745;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h2 {
+            color: #2d5016;
+            font-size: 24px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .booking-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .booking-info h3 {
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+
+        .booking-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <span>🏨</span>
+            <div>
+                <h1>HOTEL</h1>
+                <div class="logo-subtitle">Quản Lý Khách Sạn</div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <a href="management.html" class="menu-item">
+                <span>🏠</span>
+                <span>Trang chủ</span>
+            </a>
+            <a href="Phong.html" class="menu-item">
+                <span>🚪</span>
+                <span>Quản Lý Phòng</span>
+            </a>
+            <a href="Gia.html" class="menu-item">
+                <span>💰</span>
+                <span>Quản Lý Giá</span>
+            </a>
+            <a href="LoaiPhong.html" class="menu-item">
+                <span>🏷️</span>
+                <span>Loại Phòng</span>
+            </a>
+            <a href="booking.html" class="menu-item ">
+                <span>📅</span>
+                <span>Đặt phòng</span>
+            </a>
+            <a href="thanhtoan.html" class="menu-item">
+                <span>💳</span>
+                <span>Thanh toán</span>
+            </a>
+            <a href="checkinout.html" class="menu-item active">
+                <span>✅</span>
+                <span>Check In/Out</span>
+            </a>
+            <a href="dichvu.html" class="menu-item">
+                <span>🛎️</span>
+                <span>Dịch Vụ</span>
+            </a>
+            <a href="hoadon.html" class="menu-item">
+                <span>💰</span>
+                <span>Hóa Đơn</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <span>👥</span>
+                <span>Quản lý người dùng</span>
+            </a>
+            <a href="baocao.html" class="menu-item " >
+                <span>📊</span>
+                <span>Báo Cáo</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h2 id="pageTitle">Check In/Out</h2>
+
+            <div class="user-dropdown">
+                <div class="user-info" id="userInfoTrigger">
+                    <span id="userNameDisplay" class="user-name">Admin</span>
+                    <div class="user-avatar" id="userAvatar">A</div>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div class="dropdown-menu" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="user-avatar-large" id="dropdownAvatar">A</div>
+                        <div>
+                            <div class="dropdown-user-name" id="dropdownUserName">Admin</div>
+                            <div class="dropdown-user-role" id="dropdownUserRole">Quản trị viên</div>
+                        </div>
+                    </div>
+
+                    <div class="dropdown-divider"></div>
+
+                    <a href="profile.html" class="dropdown-item">
+                        <span>👤</span> Hồ sơ cá nhân
+                    </a>
+                    <a href="#" class="dropdown-item text-danger" onclick="logout()">
+                        <span>🚪</span> Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('checkin')">Chờ Check In</button>
+            <button class="tab-btn" onclick="switchTab('staying')">Đang Ở</button>
+            <button class="tab-btn" onclick="switchTab('checkout')">Chờ Check Out</button>
+        </div>
+
+        <!-- Content Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">Danh Sách Đặt Phòng</h3>
+                    <p style="color: #666; font-size: 14px; margin-top: 5px;">Quản lý check in/out</p>
+                </div>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="🔍 Tìm theo tên khách, số phòng, mã đặt..." id="searchInput">
+                <button class="btn btn-primary" onclick="searchBookings()">Tìm kiếm</button>
+            </div>
+
+            <div id="bookingsList"></div>
+        </div>
+    </div>
+
+    <!-- Check In Modal -->
+    <div id="checkinModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Check In</h2>
+                <button class="close-btn" onclick="closeModal('checkinModal')">&times;</button>
+            </div>
+
+            <div class="booking-info" id="checkinBookingInfo"></div>
+
+            <form id="checkinForm">
+                <div class="form-group">
+                    <label>Xác nhận CMND/CCCD *</label>
+                    <input type="text" id="checkinCMND" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Số người lớn</label>
+                        <input type="number" id="checkinAdults" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Số trẻ em</label>
+                        <input type="number" id="checkinChildren" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Đặt cọc (VNĐ)</label>
+                    <input type="number" id="checkinDeposit" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea id="checkinNote" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success" style="width: 100%;">✅ Xác nhận Check In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Check Out Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Check Out</h2>
+                <button class="close-btn" onclick="closeModal('checkoutModal')">&times;</button>
+            </div>
+
+            <div class="booking-info" id="checkoutBookingInfo"></div>
+
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label>Phí phòng</label>
+                    <input type="number" id="checkoutRoomFee" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Phí dịch vụ</label>
+                    <input type="number" id="checkoutServiceFee" value="0" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Tổng cộng</label>
+                    <input type="number" id="checkoutTotal" readonly style="font-weight: bold; font-size: 18px;">
+                </div>
+
+                <div class="form-group">
+                    <label>Hình thức thanh toán *</label>
+                    <select id="checkoutPayment" required>
+                        <option value="">-- Chọn --</option>
+                        <option value="TienMat">Tiền mặt</option>
+                        <option value="The">Thẻ</option>
+                        <option value="ChuyenKhoan">Chuyển khoản</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Số tiền thanh toán *</label>
+                    <input type="number" id="checkoutAmount" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea id="checkoutNote" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-danger" style="width: 100%;">🚪 Xác nhận Check Out</button>
+            </form>
+        </div>
+    </div>
+    <script src="js/Auth.js"></script>
+    <script src="js/checkinout.js"></script>
+</body>
+</html>

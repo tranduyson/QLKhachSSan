@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Người Dùng - Hotel Management</title>
+    <link rel="stylesheet" href="css/common.css">
+    
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <span>🏨</span>
+            <div>
+                <h1>HOTEL</h1>
+                <div class="logo-subtitle">Quản Lý Khách Sạn</div>
+            </div>
+        </div>
+
+        <div class="menu">
+         
+            <a href="management.html" class="menu-item ">
+                <span>🏠</span>
+                <span>Trang chủ</span>
+            </a>
+            <a href="Phong.html" class="menu-item ">
+                <span>🚪</span>
+                <span>Quản Lý Phòng</span>
+            </a>
+            <a href="Gia.html" class="menu-item ">
+                <span>💰</span>
+                <span>Quản Lý Giá</span>
+            </a>
+            <a href="LoaiPhong.html" class="menu-item ">
+                <span>🏷️</span>
+                <span>Loại Phòng</span>
+            </a>
+            <a href="booking.html" class="menu-item ">
+                <span>📅</span>
+                <span>Đặt phòng</span>
+            </a>
+            <a href="thanhtoan.html" class="menu-item ">
+                <span>💳</span>
+                <span>Thanh toán</span>
+            </a>
+            <a href="checkinout.html" class="menu-item ">
+                <span>✅</span>
+                <span>Check In/Out</span>
+            </a>
+            <a href="dichvu.html" class="menu-item ">
+                <span>🛎️</span>
+                <span>Dịch Vụ</span>
+            </a>
+            <a href="hoadon.html" class="menu-item ">
+                <span>💰</span>
+                <span>Hóa Đơn</span>
+            </a>
+            <a href="users.html" class="menu-item active">
+                <span>👥</span>
+                <span>Quản lý người dùng</span>
+            </a>
+            <a href="baocao.html" class="menu-item " >
+                <span>📊</span>
+                <span>Báo Cáo</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h2 id="pageTitle">Trang Chủ</h2>
+
+                <div class="user-dropdown">
+                  <div class="user-info" id="userInfoTrigger">
+                  <span id="userNameDisplay" class="user-name">Admin</span>
+                  <div class="user-avatar" id="userAvatar">A</div>
+                </div>
+
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu" id="userDropdown">
+            <div class="dropdown-header">
+                <div class="user-avatar-large" id="dropdownAvatar">A</div>
+                <div>
+                    <div class="dropdown-user-name" id="dropdownUserName">Admin</div>
+                    <div class="dropdown-user-role" id="dropdownUserRole">Quản trị viên</div>
+                </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="profile.html" class="dropdown-item">
+                <span>👤</span> Hồ sơ cá nhân
+            </a>
+            <a href="#" class="dropdown-item text-danger" onclick="logout()">
+                <span>🚪</span> Đăng xuất
+            </a>
+        </div>
+    </div>
+</div>
+        
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Tổng người dùng</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #dc3545;">
+                <div class="stat-number" style="color: #dc3545;" id="adminCount">0</div>
+                <div class="stat-label">Admin</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #17a2b8;">
+                <div class="stat-number" style="color: #17a2b8;" id="staffCount">0</div>
+                <div class="stat-label">Nhân viên</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #28a745;">
+                <div class="stat-number" style="color: #28a745;" id="activeCount">0</div>
+                <div class="stat-label">Đang hoạt động</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">Danh Sách Người Dùng</h3>
+                    <p style="color: #666; font-size: 14px; margin-top: 5px;">Quản lý tài khoản người dùng hệ thống</p>
+                </div>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    ➕ Thêm Người Dùng
+                </button>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <input type="text" id="searchInput" placeholder="🔍 Tìm theo tên, username..." 
+                       style="flex: 1; padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 8px;"
+                       onkeyup="filterUsers()">
+                <select id="roleFilter" onchange="filterUsers()"
+                        style="padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <option value="">Tất cả vai trò</option>
+                    <option value="Admin">Admin</option>
+                    <option value="LeTan">Lễ Tân</option>
+                    <option value="KeToan">Kế Toán</option>
+                    <option value="Khach">Khách</option>
+                </select>
+            </div>
+
+            <div id="usersTableContainer"></div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Thêm Người Dùng</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <form id="userForm">
+                <div class="form-group">
+                    <label>Tên đăng nhập *</label>
+                    <input type="text" id="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Mật khẩu *</label>
+                    <input type="password" id="password" required>
+                    <small style="color: #666;">Tối thiểu 6 ký tự</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Họ và tên *</label>
+                    <input type="text" id="fullName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Vai trò *</label>
+                    <select id="role" required>
+                        <option value="">-- Chọn vai trò --</option>
+                        <option value="Admin">Admin</option>
+                        <option value="LeTan">Lễ Tân</option>
+                        <option value="KeToan">Kế Toán</option>
+                        <option value="Khach">Khách</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email">
+                </div>
+
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="tel" id="phone">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">
+                        💾 Lưu
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                        Hủy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/Auth.js"></script>
+    <script src="js/users.js"></script>
+</body>
+</html>

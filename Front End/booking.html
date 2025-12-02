@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Phòng - Hotel Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(180deg, #2d5016 0%, #1a3009 100%);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            color: white;
+        }
+
+        .logo-subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .menu {
+            margin-top: 30px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.15);
+        }
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #2d5016;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #2d5016;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .api-notes {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .api-notes h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .api-notes ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .api-notes li {
+            color: #856404;
+            margin: 5px 0;
+            font-size: 13px;
+        }
+
+        .api-notes code {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .toggle-notes {
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+
+        /* Rooms Grid */
+        .rooms-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .room-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .room-card.available {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%);
+        }
+
+        .room-card.occupied {
+            border-color: #dc3545;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffebee 100%);
+        }
+
+        .room-card.maintenance {
+            border-color: #ffc107;
+            background: linear-gradient(135deg, #fffbf0 0%, #fff8e1 100%);
+        }
+
+        .room-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .room-type {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .room-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d5016;
+            margin-top: 10px;
+        }
+
+        .room-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-available {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-occupied {
+            background: #dc3545;
+            color: white;
+        }
+
+        .status-maintenance {
+            background: #ffc107;
+            color: #333;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h2 {
+            color: #2d5016;
+            font-size: 24px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .room-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .room-details h3 {
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+
+        .room-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <span>🏨</span>
+            <div>
+                <h1>HOTEL</h1>
+                <div class="logo-subtitle">Quản Lý Khách Sạn</div>
+            </div>
+        </div>
+
+        <div class="menu">
+          <a href="management.html" class="menu-item">
+                <span>🏠</span>
+                <span>Trang chủ</span>
+            </a>
+            <a href="Phong.html" class="menu-item">
+                <span>🚪</span>
+                <span>Quản Lý Phòng</span>
+            </a>
+            <a href="Gia.html" class="menu-item">
+                <span>💰</span>
+                <span>Quản Lý Giá</span>
+            </a>
+            <a href="LoaiPhong.html" class="menu-item">
+                <span>🏷️</span>
+                <span>Loại Phòng</span>
+            </a>
+            <a href="booking.html" class="menu-item active">
+                <span>📅</span>
+                <span>Đặt phòng</span>
+            </a>
+            <a href="thanhtoan.html" class="menu-item">
+                <span>💳</span>
+                <span>Thanh toán</span>
+            </a>
+            <a href="checkinout.html" class="menu-item">
+                <span>✅</span>
+                <span>Check In/Out</span>
+            </a>
+            <a href="dichvu.html" class="menu-item">
+                <span>🛎️</span>
+                <span>Dịch Vụ</span>
+            </a>
+            <a href="hoadon.html" class="menu-item">
+                <span>💰</span>
+                <span>Hóa Đơn</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <span>👥</span>
+                <span>Quản lý người dùng</span>
+            </a>
+            <a href="baocao.html" class="menu-item " >
+                <span>📊</span>
+                <span>Báo Cáo</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h2>Đặt Phòng</h2>
+            <div class="user-info">
+                <span id="userName">Admin</span>
+                <div class="user-avatar">A</div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalRooms">50</div>
+                <div class="stat-label">Tổng số phòng</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="availableRooms">30</div>
+                <div class="stat-label">Phòng trống</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="occupiedRooms">15</div>
+                <div class="stat-label">Phòng đã đặt</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="maintenanceRooms">5</div>
+                <div class="stat-label">Phòng bảo trì</div>
+            </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="filter-section">
+            <button class="toggle-notes" onclick="toggleApiNotes()">📋 Xem ghi chú API</button>
+            
+            <div id="apiNotes" class="api-notes" style="display: none;">
+                <h3>📌 Ghi chú API Endpoints (Đang comment để dùng dữ liệu demo):</h3>
+                <ul>
+                    <li><strong>Base URL:</strong> <code>https://localhost:7105</code></li>
+                    <li><strong>Lấy danh sách phòng:</strong> <code>GET /api-admin/DatPhong</code> - Đang dùng data demo</li>
+                    <li><strong>Lấy danh sách khách:</strong> <code>GET /api-admin/Khach</code> - Đang dùng data demo</li>
+                    <li><strong>Lấy dịch vụ:</strong> <code>GET /api-admin/DichVu</code> - Đang dùng data demo</li>
+                    <li><strong>Đặt phòng:</strong> <code>POST /api-admin/DatPhong</code> - Đang dùng console.log()</li>
+                    <li><strong>Token:</strong> Lấy từ localStorage (nếu có)</li>
+                    <li>⚠️ <strong>Lưu ý:</strong> Tất cả API call đã được comment lại, hiện đang dùng dữ liệu mẫu để demo</li>
+                </ul>
+            </div>
+
+            <div class="filter-group">
+                <label>Loại phòng:</label>
+                <select id="roomTypeFilter" onchange="filterRooms()">
+                    <option value="">Tất cả</option>
+                    <option value="VIP">VIP</option>
+                    <option value="Standard">Standard</option>
+                    <option value="Deluxe">Deluxe</option>
+                </select>
+
+                <label>Trạng thái:</label>
+                <select id="statusFilter" onchange="filterRooms()">
+                    <option value="">Tất cả</option>
+                    <option value="available">Trống</option>
+                    <option value="occupied">Đã đặt</option>
+                    <option value="maintenance">Bảo trì</option>
+                </select>
+
+                <label>Ngày đến:</label>
+                <input type="date" id="checkInDate" onchange="filterRooms()">
+
+                <label>Ngày đi:</label>
+                <input type="date" id="checkOutDate" onchange="filterRooms()">
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #28a745;"></div>
+                    <span>Phòng trống</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #dc3545;"></div>
+                    <span>Đã đặt</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ffc107;"></div>
+                    <span>Bảo trì</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms -->
+        <div class="rooms-container">
+            <div id="roomsContainer" class="rooms-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modal Booking -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Đặt Phòng</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <div id="modalMessage"></div>
+
+            <div class="room-details" id="selectedRoomDetails"></div>
+
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label>Khách hàng *</label>
+                    <select id="customerId" required>
+                        <option value="">-- Chọn khách hàng --</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ngày nhận phòng *</label>
+                        <input type="datetime-local" id="checkInDateTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày trả phòng *</label>
+                        <input type="datetime-local" id="checkOutDateTime" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Số người lớn</label>
+                        <input type="number" id="adults" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Số trẻ em</label>
+                        <input type="number" id="children" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Dịch vụ thêm</label>
+                    <select id="serviceId" multiple size="4">
+                        <option value="">-- Không chọn --</option>
+                    </select>
+                    <small style="color: #666;">Giữ Ctrl để chọn nhiều dịch vụ</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea id="notes" rows="3" placeholder="Yêu cầu đặc biệt..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Xác nhận đặt phòng</button>
+            </form>
+        </div>
+    </div>
+
+   <script src="js/Auth.js"></script>
+    <script src="js/booking.js"></script>
+</body>
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOTEL - Báo Cáo & Cài Đặt</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); color: #333; }
+    .container-fluid { display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(180deg, #2d5016 0%, #1a3009 100%);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            color: white;
+        }
+
+        .logo-subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .menu {
+            margin-top: 30px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.15);
+        }
+
+    /* Main */
+    .main-content { margin-left: 260px; padding: 2rem; flex: 1; }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2rem; 
+      border-radius: 1rem; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 2rem;
+      color: white;
+    }
+    .header h2 { font-size: 2rem; font-weight: bold; color: white; }
+    .header .tabs { display: flex; gap: 0.5rem; align-items: center; }
+    .tab-btn {
+      padding: 0.75rem 1.5rem; 
+      border-radius: 0.75rem; 
+      font-weight: 600; 
+      cursor: pointer;
+      background: rgba(255,255,255,0.2); 
+      color: white; 
+      transition: all 0.3s; 
+      border: 2px solid transparent;
+      backdrop-filter: blur(10px);
+    }
+    .tab-btn:hover { 
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+    .tab-btn.active { 
+      background: white; 
+      color: #667eea;
+      border-color: white;
+    }
+
+    /* Content */
+    .content { display: none; }
+    .content.active { display: block; }
+    .content-card { 
+      background: white; 
+      padding: 2rem; 
+      border-radius: 1rem; 
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
+      margin-bottom: 2rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .content-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    /* Time Filter */
+    .time-filter {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+    }
+    .time-filter select, .time-filter input {
+      padding: 0.75rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 0.75rem;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+      background: white;
+    }
+    .time-filter select:focus, .time-filter input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .time-filter button {
+      padding: 0.75rem 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    .time-filter button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    .time-filter label {
+      color: #4a5568;
+      font-weight: 600;
+    }
+
+    /* Cards */
+    .cards-fancy { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+      gap: 1.5rem; 
+      margin-bottom: 2rem; 
+    }
+    .card-fancy {
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      border-left: 5px solid;
+      background: white;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-fancy::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      transform: translate(30%, -30%);
+    }
+    .card-fancy:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    .card-fancy h3 { 
+      font-size: 2.5rem; 
+      font-weight: bold; 
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, currentColor 0%, currentColor 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .card-fancy p { 
+      font-size: 0.95rem; 
+      color: #6b7280;
+      font-weight: 500;
+    }
+    .card-icon {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 2.5rem;
+      opacity: 0.15;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #667eea;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    .loading::after {
+      content: '...';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60% { content: '...'; }
+      80%, 100% { content: ''; }
+    }
+    
+    .error-message {
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      color: #991b1b;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 1.5rem;
+      border-left: 5px solid #dc2626;
+      font-weight: 500;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+    }
+
+    /* Charts */
+    .chart-container { 
+      position: relative; 
+      height: 400px; 
+      margin-bottom: 2rem;
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+    .chart-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .stat-item {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+    .stat-item:hover {
+      border-color: #667eea;
+      transform: scale(1.05);
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+    .stat-label {
+      color: #6b7280;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .api-note {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 2px solid #fbbf24;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 15px rgba(251, 191, 36, 0.2);
+    }
+    .api-note code { 
+      background: #fef3c7; 
+      padding: 0.4rem 0.8rem; 
+      border-radius: 0.5rem; 
+      font-family: 'Courier New', monospace;
+      color: #92400e;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .container-fluid { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; }
+      .main-content { margin-left: 0; }
+      .cards-fancy { grid-template-columns: 1fr; }
+      .time-filter { flex-direction: column; align-items: stretch; }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .content-card, .card-fancy {
+      animation: fadeIn 0.5s ease-out;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+  <!-- Sidebar -->
+  <div class="sidebar">
+        <div class="logo">
+            <span>🏨</span>
+            <div>
+                <h1>HOTEL</h1>
+                <div class="logo-subtitle">Quản Lý Khách Sạn</div>
+            </div>
+        </div>
+
+        <div class="menu">
+          
+            <a href="management.html" class="menu-item">
+                <span>🏠</span>
+                <span>Trang chủ</span>
+            </a>
+            <a href="Phong.html" class="menu-item">
+                <span>🚪</span>
+                <span>Quản Lý Phòng</span>
+            </a>
+            <a href="Gia.html" class="menu-item">
+                <span>💰</span>
+                <span>Quản Lý Giá</span>
+            </a>
+            <a href="LoaiPhong.html" class="menu-item">
+                <span>🏷️</span>
+                <span>Loại Phòng</span>
+            </a>
+            <a href="booking.html" class="menu-item">
+                <span>📅</span>
+                <span>Đặt phòng</span>
+            </a>
+            <a href="thanhtoan.html" class="menu-item">
+                <span>💳</span>
+                <span>Thanh toán</span>
+            </a>
+            <a href="checkinout.html" class="menu-item">
+                <span>✅</span>
+                <span>Check In/Out</span>
+            </a>
+            <a href="dichvu.html" class="menu-item">
+                <span>🛎️</span>
+                <span>Dịch Vụ</span>
+            </a>
+            <a href="hoadon.html" class="menu-item">
+                <span>💰</span>
+                <span>Hóa Đơn</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <span>👥</span>
+                <span>Quản lý người dùng</span>
+            </a>
+            <a href="baocao.html" class="menu-item active" >
+                <span>📊</span>
+                <span>Báo Cáo</span>
+            </a>
+        </div>
+    </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="top-bar">
+            <h2 id="pageTitle">Trang Chủ</h2>
+
+                <div class="user-dropdown">
+                  <div class="user-info" id="userInfoTrigger">
+                  <span id="userNameDisplay" class="user-name">Admin</span>
+                  <div class="user-avatar" id="userAvatar">A</div>
+                </div>
+
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu" id="userDropdown">
+            <div class="dropdown-header">
+                <div class="user-avatar-large" id="dropdownAvatar">A</div>
+                <div>
+                    <div class="dropdown-user-name" id="dropdownUserName">Admin</div>
+                    <div class="dropdown-user-role" id="dropdownUserRole">Quản trị viên</div>
+                </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="profile.html" class="dropdown-item">
+                <span>👤</span> Hồ sơ cá nhân
+            </a>
+            <a href="#" class="dropdown-item text-danger" onclick="logout()">
+                <span>🚪</span> Đăng xuất
+            </a>
+        </div>
+    </div>
+</div>
+
+    <!-- Reports Section -->
+    <section id="reports" class="content active">
+      <!-- Time Filter -->
+      <div class="time-filter">
+        <label><strong>📅 Loại báo cáo:</strong></label>
+        <select id="loaiFilter">
+          <option value="ngay">Theo ngày</option>
+          <option value="tuan">Theo tuần</option>
+          <option value="thang" selected>Theo tháng</option>
+          <option value="quy">Theo quý</option>
+          <option value="nam">Theo năm</option>
+        </select>
+
+        <label><strong>📆 Năm:</strong></label>
+        <input type="number" id="namFilter" value="2025" min="2020" max="2030" />
+
+        <label id="thangLabel"><strong>🗓️ Tháng:</strong></label>
+        <select id="thangFilter">
+          <option value="1">Tháng 1</option>
+          <option value="2">Tháng 2</option>
+          <option value="3">Tháng 3</option>
+          <option value="4">Tháng 4</option>
+          <option value="5">Tháng 5</option>
+          <option value="6">Tháng 6</option>
+          <option value="7">Tháng 7</option>
+          <option value="8">Tháng 8</option>
+          <option value="9">Tháng 9</option>
+          <option value="10">Tháng 10</option>
+          <option value="11" selected>Tháng 11</option>
+          <option value="12">Tháng 12</option>
+        </select>
+
+        <label id="ngayLabel" style="display:none;"><strong>📅 Ngày:</strong></label>
+        <input type="number" id="ngayFilter" style="display:none;" min="1" max="31" value="14" />
+
+        <label id="tuanLabel" style="display:none;"><strong>📅 Tuần:</strong></label>
+        <input type="number" id="tuanFilter" style="display:none;" min="1" max="53" value="46" />
+
+        <button class="btn btn-primary" onclick="loadBaoCao()">🔍 Tải báo cáo</button>
+      </div>
+
+      <div id="error-container"></div>
+      <div id="loading-container" class="loading" style="display:none;">Đang tải dữ liệu</div>
+
+      <!-- Revenue Cards -->
+      <div class="cards-fancy">
+        <div class="card-fancy" style="border-left-color:#10b981;">
+          <div class="card-icon">💰</div>
+          <h3 style="color:#10b981;" id="tongTien">0đ</h3>
+          <p>Tổng doanh thu</p>
+        </div>
+        <div class="card-fancy" style="border-left-color:#3b82f6;">
+          <div class="card-icon">📄</div>
+          <h3 style="color:#3b82f6;" id="soHoaDon">0</h3>
+          <p>Tổng hóa đơn</p>
+        </div>
+        <div class="card-fancy" style="border-left-color:#8b5cf6;">
+          <div class="card-icon">🏨</div>
+          <h3 style="color:#8b5cf6;" id="soPhong">0</h3>
+          <p>Số phòng đã thuê</p>
+        </div>
+        <div class="card-fancy" style="border-left-color:#f59e0b;">
+          <div class="card-icon">📊</div>
+          <h3 style="color:#f59e0b;" id="giaTriTB">0đ</h3>
+          <p>Giá trị TB/hóa đơn</p>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="content-card">
+        <div class="chart-title">📈 Biểu Đồ Phân Tích</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+          <div class="chart-container" style="height: 350px;">
+            <canvas id="doughnutChart"></canvas>
+          </div>
+          <div class="chart-container" style="height: 350px;">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics Grid -->
+      <div class="content-card">
+        <div class="chart-title">📊 Thống Kê Chi Tiết</div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value" id="statDoanhThuNgay">0đ</div>
+            <div class="stat-label">Doanh thu / ngày</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="statHoaDonNgay">0</div>
+            <div class="stat-label">Hóa đơn / ngày</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="statPhongNgay">0</div>
+            <div class="stat-label">Phòng / ngày</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="statTyLe">0%</div>
+            <div class="stat-label">Tỷ lệ lấp đầy</div>
+          </div>
+        </div>
+      </div>
+
+      
+    </section>
+  </main>
+</div>
+
+ <script src="js/Auth.js"></script>
+<script src="js/baocao.js"></script>
+
+</body>
+</html>
