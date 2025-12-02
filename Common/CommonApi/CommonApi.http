@@ -1,0 +1,6 @@
+@CommonApi_HostAddress = http://localhost:5118
+
+GET {{CommonApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
